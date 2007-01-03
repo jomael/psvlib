@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: phpModules.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: phpModules.pas,v 6.2 01/2007 delphi32 Exp $ }
 
 
 unit phpModules;
@@ -311,12 +311,17 @@ begin
     ModuleEntry.size := sizeof(Tzend_module_entry);
     ModuleEntry.zend_api := ZEND_MODULE_API_NO;
     ModuleEntry.zts := USING_ZTS;
+    {$IFDEF PHP520}
+    ModuleEntry.Name := StrNew(PChar(Extension.ModuleName));
+    ModuleEntry.version := StrNew(PChar(Extension.Version));
+    {$ELSE}
     {$IFDEF PHP510}
     ModuleEntry.Name := estrndup(PChar(Extension.ModuleName), length(extension.ModuleName));
     ModuleEntry.version := estrndup(PChar(Extension.Version), length(Extension.Version));
     {$ELSE}
     ModuleEntry.Name := StrNew(PChar(Extension.ModuleName));
     ModuleEntry.version := StrNew(PChar(Extension.Version));
+    {$ENDIF}
     {$ENDIF}
     ModuleEntry.module_startup_func :=  @minit;
     ModuleEntry.module_shutdown_func := @mshutdown;
@@ -326,10 +331,14 @@ begin
     SetLength(module_entry_table, Extension.FFunctions.Count + 1);
     for cnt := 0 to Extension.FFunctions.Count - 1 do
     begin
+      {$IFDEF PHP520}
+      module_entry_table[cnt].fname := StrNew(PChar(Extension.FFunctions[cnt].FunctionName));
+      {$ELSE}
       {$IFDEF PHP510}
       module_entry_table[cnt].fname := estrndup(PChar(Extension.FFunctions[cnt].FunctionName), length(Extension.FFunctions[cnt].FunctionName));
       {$ELSE}
       module_entry_table[cnt].fname := StrNew(PChar(Extension.FFunctions[cnt].FunctionName));
+      {$ENDIF}
       {$ENDIF}
       module_entry_table[cnt].handler := @DispatchRequest;
       {$IFDEF PHP4}
