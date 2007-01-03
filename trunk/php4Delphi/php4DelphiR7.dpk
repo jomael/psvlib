@@ -26,6 +26,7 @@ package php4DelphiR7;
 {$DESCRIPTION 'php4Delphi (run-rime)'}
 {$RUNONLY}
 {$IMPLICITBUILD OFF}
+{$DEFINE EUREKALOG}
 
 requires
   rtl,
