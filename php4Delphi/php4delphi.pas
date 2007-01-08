@@ -137,7 +137,7 @@ type
     function  VariableByName(AName : string) : TPHPVariable;
     procedure StartupModule; virtual;
     procedure ShutdownModule; virtual;
-    property  ExecuteMethod : TPHPExecuteMethod read FExecuteMethod write FExecuteMethod default emServer;
+    property  ExecuteMethod : TPHPExecuteMethod read FExecuteMethod write FExecuteMethod  default emServer;
     property  FileName  : string read FFileName write FFileName;
     property  Constants : TPHPConstants read FConstants write SetConstants;
     property  ConstantCount : integer read GetConstantCount;
@@ -731,6 +731,11 @@ begin
 
   TimeStr := IntToStr(FMaxInputTime);
   zend_alter_ini_entry('max_input_time', 15, PChar(TimeStr), Length(TimeStr), ZEND_INI_SYSTEM, ZEND_INI_STAGE_ACTIVATE);
+
+  {$IFDEF PHP520}
+  zend_alter_ini_entry('short_open_tag', 15, '1', 1, ZEND_INI_SYSTEM, ZEND_INI_STAGE_ACTIVATE);
+  {$ENDIF}
+
 end;
 
 {$IFDEF REGISTER_COLORS}
@@ -999,6 +1004,10 @@ begin
       FOnRequestStartup(Self);
     TimeStr := IntToStr(FMaxExecutionTime);
     zend_alter_ini_entry('max_execution_time', 19, PChar(TimeStr), Length(TimeStr), ZEND_INI_SYSTEM, ZEND_INI_STAGE_RUNTIME);
+
+   {$IFDEF PHP520}
+   zend_alter_ini_entry('short_open_tag', 15, '1', 1, ZEND_INI_SYSTEM, ZEND_INI_STAGE_RUNTIME);
+   {$ENDIF}
 
     FSessionActive := true;
   except
