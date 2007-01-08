@@ -20,7 +20,6 @@ object frmPHPDemo: TfrmPHPDemo
     Top = 0
     Width = 4
     Height = 465
-    Cursor = crHSplit
     Align = alRight
   end
   object pnlButtons: TPanel
