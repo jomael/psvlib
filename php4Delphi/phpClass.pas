@@ -591,7 +591,7 @@ begin
   fnc := emalloc(sizeof(TZendFunction));
   FillChar(fnc^, sizeOf(TZendFunction), 0);
   fnc^.internal_function._type := ZEND_OVERLOADED_FUNCTION;
-  fnc^.internal_function.function_name := estrndup(method_name, method_len);
+  fnc^.internal_function.function_name := strdup(method_name);
   fnc^.internal_function.handler := @class_call_method;
   result := fnc;
 end;

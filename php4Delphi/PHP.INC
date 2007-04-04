@@ -17,15 +17,17 @@ If you are using PHP version 5.0.4 please add $DEFINE PHP504
 If you are using PHP version 5.1.0 or higher please add $DEFINE PHP510
 If you are using PHP version 5.1.1 or higher please add $DEFINE PHP511
 If you are using PHP version 5.1.2 or higher please add $DEFINE PHP512
-If you are using PHP version 5.2.0 or highre please add $DEFINE PHP520
+If you are using PHP version 5.2.0 or higher please add $DEFINE PHP520
+if you are using PHP version 5.2.1 or highre please add $DEFINE PHP521
 
 Sorry for such complicated configuration, but PHP team does not keep
 backward compatibility between PHP versions.
 }
 
 {.$DEFINE PHP4}
-{.$DEFINE PHP433}
 {.$DEFINE PHP430}
+{.$DEFINE PHP433}
+{.$DEFINE PHP446}
 
 {If you are using PHP 4 please comment $DEFINE PHP5}
 
@@ -46,6 +48,7 @@ backward compatibility between PHP versions.
  {$UNDEF PHP510}
  {$UNDEF PHP511}
  {$UNDEF PHP512}
+ {$UNDEF PHP520}
 {$ENDIF}
 
 {$IFDEF PHP430}
@@ -55,6 +58,7 @@ backward compatibility between PHP versions.
  {$UNDEF PHP510}
  {$UNDEF PHP511}
  {$UNDEF PHP512}
+ {$UNDEF PHP520}
 {$ENDIF}
 
 
@@ -62,10 +66,11 @@ backward compatibility between PHP versions.
   {$UNDEF PHP4}
   {$UNDEF PHP430}
   {$UNDEF PHP433}
+  {$UNDEF PHP446}
 {$ENDIF}
 
 
-{$DEFINE QUIET_LOAD} //Do not show error while loading php4ts.dll
+{.$DEFINE QUIET_LOAD} //Do not show error while loading php4ts.dll
 
 {.$DEFINE PHP4DELPHI_AUTOLOAD}     //Load php4ts.dll at initialization
 {.$DEFINE PHP4DELPHI_AUTOUNLOAD}   // Unload php4ts.dll at finalization

@@ -19,20 +19,23 @@ uses
   PHPFunctions, ZendTypes, phpTypes, PHPCommon;
 
 type
-  TForm1 = class(TForm)
+  TfrmLibDemo = class(TForm)
     psvPHP1: TpsvPHP;
     PHPLibrary1: TPHPLibrary;
     Memo1: TMemo;
     Button1: TButton;
-    Button2: TButton;
+    btnExecute: TButton;
+    PHPEngine: TPHPEngine;
     procedure Button1Click(Sender: TObject);
-    procedure Button2Click(Sender: TObject);
+    procedure btnExecuteClick(Sender: TObject);
     procedure PHPLibrary1Functions0Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
       ThisPtr: Pzval; TSRMLS_DC: Pointer);
     procedure PHPLibrary1Functions1Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
       ThisPtr: Pzval; TSRMLS_DC: Pointer);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -40,34 +43,44 @@ type
   end;
 
 var
-  Form1: TForm1;
+  frmLibDemo: TfrmLibDemo;
 
 implementation
 
 {$R *.DFM}
 
-procedure TForm1.Button1Click(Sender: TObject);
+procedure TfrmLibDemo.Button1Click(Sender: TObject);
 begin
   ShowMessage('Click');
 end;
 
-procedure TForm1.Button2Click(Sender: TObject);
+procedure TfrmLibDemo.btnExecuteClick(Sender: TObject);
 begin
    psvPhp1.RunCode(memo1.Lines.text);
 end;
 
-procedure TForm1.PHPLibrary1Functions0Execute(Sender: TObject;
+procedure TfrmLibDemo.PHPLibrary1Functions0Execute(Sender: TObject;
   Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
   TSRMLS_DC: Pointer);
 begin
-  Form1.Caption := Parameters[0].Value;
+  frmLibDemo.Caption := Parameters[0].Value;
 end;
 
-procedure TForm1.PHPLibrary1Functions1Execute(Sender: TObject;
+procedure TfrmLibDemo.PHPLibrary1Functions1Execute(Sender: TObject;
   Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
   TSRMLS_DC: Pointer);
 begin
   Button1.Click;
+end;
+
+procedure TfrmLibDemo.FormCreate(Sender: TObject);
+begin
+  PHPEngine.StartupEngine;
+end;
+
+procedure TfrmLibDemo.FormDestroy(Sender: TObject);
+begin
+   PHPEngine.ShutdownEngine;
 end;
 
 end.

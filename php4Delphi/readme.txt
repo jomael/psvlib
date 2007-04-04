@@ -1,7 +1,7 @@
                      PHP4Delphi library                       
 PHP - Delphi interface and PHP extensions development framework                  
 
-{ $Id: readme.txt,v 6.2 12/2006 delphi32 Exp $ } 
+{ $Id: readme.txt,v 7.0 04/2007 delphi32 Exp $ } 
 
 PHP4Delphi is a Delphi interface to PHP for Delphi 5, 6, 7, Delphi 2005 and Delphi 2006.
 
@@ -42,6 +42,15 @@ PHP 4.3.5 gives some memory management troubles with php4delphi
 This problem is fixed in PHP 4.3.6                        
 
 History:
+
+7.0
+
+* Compatible with PHP 5.2.1
+* Compatible with PHP 4.4.6
+* Thread safe TpsvPHP component
+* New component TPHPEngine introduced
+* RunCode method reimplemented to solve "black horror" of pipes.
+
 
 6.2
 

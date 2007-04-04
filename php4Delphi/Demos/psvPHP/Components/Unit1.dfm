@@ -47,9 +47,14 @@ object frmTest: TfrmTest
     OnClick = btnExecuteClick
   end
   object PHP: TpsvPHP
-    Constants = <>
     Variables = <>
     Left = 400
     Top = 136
+  end
+  object PHPEngine: TPHPEngine
+    Constants = <>
+    ReportDLLError = False
+    Left = 408
+    Top = 88
   end
 end

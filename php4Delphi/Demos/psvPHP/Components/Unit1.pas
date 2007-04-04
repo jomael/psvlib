@@ -37,6 +37,7 @@ type
     btnExecute: TButton;
     PHP: TpsvPHP;
     Label1: TLabel;
+    PHPEngine: TPHPEngine;
     procedure btnExecuteClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
@@ -108,11 +109,13 @@ begin
     Add('delphi_show_message($st);');
   {$ENDIF}
    end;
+   PHPEngine.StartupEngine;
 end;
 
 procedure TfrmTest.FormDestroy(Sender: TObject);
 begin
    btnClose.Free;
+   PHPEngine.ShutdownEngine;
 end;
 
 { TMyButton }

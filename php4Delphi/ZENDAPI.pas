@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: ZENDAPI.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: ZENDAPI.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit zendAPI;
 
@@ -89,9 +89,23 @@ var
   zend_disable_class   : function(class_name : pchar; class_name_length : uint; TSRMLS_DC : pointer) : integer; cdecl;
 
 
-  zend_hash_add_or_update                         : function(ht: PHashTable; arKey: PChar;
+{$IFDEF PHP4}
+  zend_hash_add_or_update  : function(ht: PHashTable; arKey: PChar;
     nKeyLength: uint; pData: Pointer; nDataSize: uint; pDest: Pointer;
     flag: Integer): Integer; cdecl;
+{$ELSE}
+var
+ _zend_hash_add_or_update : function (ht : PHashTable; arKey : PChar;
+    nKeyLength : uint; pData : pointer; nDataSize : uint; pDes : pointer;
+    flag : integer; __zend_filename: PChar; __zend_lineno: uint) : integer; cdecl;
+
+ function zend_hash_add_or_update(ht : PHashTable; arKey : PChar;
+    nKeyLength : uint; pData : pointer; nDataSize : uint; pDes : pointer;
+    flag : integer) : integer; cdecl;
+
+{$ENDIF}
+
+function zend_hash_add(ht : PHashTable; arKey : PChar; nKeyLength : uint; pData : pointer; nDataSize : uint; pDest : pointer) : integer; cdecl;
 
 var
  {$IFDEF PHP4}
@@ -114,9 +128,24 @@ var
   zend_hash_merge                                 : procedure(target: PHashTable; source: PHashTable;
     pCopyConstructor: pointer; tmp: Pointer; size: uint; overwrite: Integer); cdecl;
 
- {$ENDIF}
+ {$ELSE}
+
+ _zend_hash_init : function (ht : PHashTable; nSize : uint;
+   pHashFunction : pointer; pDestructor : pointer; persistent: zend_bool;
+   __zend_filename: PChar; __zend_lineno: uint) : integer; cdecl;
+ _zend_hash_init_ex : function (ht : PHashTable;  nSize : uint;
+   pHashFunction : pointer; pDestructor : pointer;  persistent : zend_bool;
+   bApplyProtection : zend_bool; __zend_filename: PChar; __zend_lineno: uint): integer; cdecl;
+
+ function zend_hash_init (ht : PHashTable; nSize : uint; pHashFunction : pointer;
+   pDestructor : pointer; persistent: zend_bool) : integer; cdecl;
+ function zend_hash_init_ex (ht : PHashTable;  nSize : uint; pHashFunction : pointer;
+ pDestructor : pointer;  persistent : zend_bool;  bApplyProtection : zend_bool): integer; cdecl;
 
 
+{$ENDIF}
+
+var
   zend_hash_destroy                               : procedure(ht: PHashTable); cdecl;
   zend_hash_clean                                 : procedure(ht: PHashTable); cdecl;
 
@@ -262,8 +291,18 @@ var
 
   zend_eval_string                                : function(str: pchar; val: pointer; strname: pchar; tsrm: pointer): integer; cdecl;
   zend_make_compiled_string_description           : function(a: Pchar; tsrm: pointer): PChar; cdecl;
-  _zval_dtor                                      : procedure(val: pzval; __zend_filename: PChar; __zend_lineno: uint); cdecl;
+
+  {$IFDEF PHP4}
   _zval_copy_ctor                                 : function(val: pzval; __zend_filename: PChar; __zend_lineno: uint): integer; cdecl;
+  _zval_dtor                                      : procedure(val: pzval; __zend_filename: PChar; __zend_lineno: uint); cdecl;
+  {$ELSE}
+  _zval_copy_ctor_func                            : procedure(val: pzval; __zend_filename: PChar; __zend_lineno: uint); cdecl;
+  _zval_dtor_func                                 : procedure(val: pzval; __zend_filename: PChar; __zend_lineno: uint); cdecl;
+  procedure  _zval_copy_ctor (val: pzval; __zend_filename: PChar; __zend_lineno: uint); cdecl;
+  procedure _zval_dtor(val: pzval; __zend_filename: PChar; __zend_lineno: uint); cdecl;
+  {$ENDIF}
+
+var
   zend_print_variable                             : function(val: pzval): integer; cdecl;
 
 
@@ -271,8 +310,12 @@ var
   zend_get_compiled_lineno   : function(TSRMLS_DC: Pointer): integer; cdecl;
 
 
+{$IFDEF PHP4}
 function zval_copy_ctor(val : pzval) : integer;
+{$ENDIF}
+
 function ts_resource(id : integer) : pointer;
+function tsrmls_fetch : pointer;
 
 procedure zenderror(Error : PChar);
 
@@ -593,6 +636,7 @@ function setjmp(buf : jump_buf) : integer; cdecl; external 'msvcrt.dll' name '_s
 function pipe(phandles : pointer; psize : uint; textmode : integer) : integer; cdecl; external 'msvcrt.dll' name '_pipe';
 procedure close(AHandle : THandle); cdecl; external 'msvcrt.dll' name '_close';
 function _write(AHandle : integer; ABuffer : pointer; count : uint) : integer; cdecl; external 'msvcrt.dll' name '_write';
+function strdup(strSource : PChar) : PChar; cdecl; external 'msvcrt.dll' name '_strdup';
 
 
 function ZEND_FAST_ALLOC: pzval;
@@ -642,6 +686,11 @@ function Z_OBJPROP(z : zval) : PHashtable;
 {$ENDIF}
 
 implementation
+
+function zend_hash_add(ht : PHashTable; arKey : PChar; nKeyLength : uint; pData : pointer; nDataSize : uint; pDest : pointer) : integer; cdecl;
+begin
+  result := zend_hash_add_or_update(ht, arKey, nKeyLength, pData, nDataSize, pDest, HASH_ADD);
+end;
 
 function STR_EMPTY_ALLOC : PChar;
 begin
@@ -813,7 +862,9 @@ function LoadZEND(const DllFilename: string) : boolean;
 var
   WriteFuncPtr  : pointer;
 begin
+ {$IFDEF QUIET_LOAD}
   Result := false;
+ {$ENDIF}
   PHPLib := LoadLibrary(PChar(DllFileName));
 {$IFNDEF QUIET_LOAD}
   if PHPLib = 0 then raise Exception.CreateFmt('%s not found', [DllFileName]);
@@ -896,6 +947,7 @@ begin
   {$IFDEF PHP4}
   // -- zend_hash_init
   zend_hash_init := GetProcAddress(PHPLib, 'zend_hash_init');
+
   // -- zend_hash_init_ex
   zend_hash_init_ex := GetProcAddress(PHPLib, 'zend_hash_init_ex');
 
@@ -907,6 +959,10 @@ begin
 
   // -- zend_hash_merge
   zend_hash_merge := GetProcAddress(PHPLib, 'zend_hash_merge');
+  {$ELSE}
+  _zend_hash_init := GetProcAddress(PHPLib, '_zend_hash_init');
+  _zend_hash_init_ex := GetProcAddress(PHPLib, '_zend_hash_init_ex');
+
   {$ENDIF}
 
   {$IFDEF PHP4}
@@ -914,7 +970,7 @@ begin
   zend_hash_add_or_update := GetProcAddress(PHPLib, 'zend_hash_add_or_update');
   {$ELSE}
   // -- zend_hash_add_or_update
-  zend_hash_add_or_update := GetProcAddress(PHPLib, '_zend_hash_add_or_update');
+  _zend_hash_add_or_update := GetProcAddress(PHPLib, '_zend_hash_add_or_update');
   {$ENDIF}
 
   // -- zend_hash_destroy
@@ -1047,11 +1103,19 @@ begin
   // -- zend_make_compiled_string_description
   zend_make_compiled_string_description := GetProcAddress(PHPLib, 'zend_make_compiled_string_description');
 
+
+  {$IFDEF PHP4}
   // -- _zval_dtor
   _zval_dtor := GetProcAddress(PHPLib, '_zval_dtor');
 
   // -- _zval_copy_ctor
   _zval_copy_ctor := GetProcAddress(PHPLib, '_zval_copy_ctor');
+
+  {$ELSE}
+  _zval_copy_ctor_func := GetProcAddress(PHPLib, '_zval_copy_ctor_func');
+  _zval_dtor_func := GetProcAddress(PHPLib, '_zval_dtor_func');
+
+  {$ENDIF}
 
   // -- zend_print_variable
   zend_print_variable := GetProcAddress(PHPLib, 'zend_print_variable');
@@ -1461,7 +1525,9 @@ begin
   // -- zend_get_parameters
   ZendGetParameters := GetProcAddress(PHPLib, 'zend_get_parameters');
 
+  {$IFDEF PHP5}
   zend_destroy_file_handle := GetProcAddress(PHPLib, 'zend_destroy_file_handle');
+  {$ENDIF}
 
  {$IFNDEF QUIET_LOAD}
  CheckZendErrors;
@@ -1471,7 +1537,7 @@ begin
   if Assigned(WriteFuncPtr) then
     @zend_write := pointer(WriteFuncPtr^);
 
-  Result := true;  
+  Result := true;
 end;
 
 procedure ZEND_PUTS(str: PChar);
@@ -1490,20 +1556,7 @@ begin
   if class_name = nil then
    Exit;
   FillChar(class_container, sizeof(Tzend_class_entry), 0);
-
-  {$IFDEF PHP5}
-  {$IFDEF PHP512}
-  class_container.name := estrdup(class_name);
-  {$ELSE}
-    {$IFDEF PHP511}
-      class_container.name := estrdup(class_name);
-    {$ELSE}
-     class_container.name := PChar(class_name);
-    {$ENDIF}
-   {$ENDIF} 
-  {$ELSE}
-  class_container.name := estrdup(class_name);
-  {$ENDIF}
+  class_container.name := strdup(class_name);
 
   class_container.name_length := strlen(class_name);
   class_container.builtin_functions := functions;
@@ -1639,7 +1692,7 @@ begin
   {$ENDIF}
 
   {$IFDEF PHP5}
-  if @zend_hash_add_or_update = nil then raise EPHP4DelphiException.Create('_zend_hash_add_or_update');
+  if @_zend_hash_add_or_update = nil then raise EPHP4DelphiException.Create('_zend_hash_add_or_update');
   {$ENDIF}
 
   if @zend_hash_destroy = nil then raise EPHP4DelphiException.Create('zend_hash_destroy');
@@ -1685,8 +1738,15 @@ begin
   if @zend_error_cb = nil then raise EPHP4DelphiException.Create('zend_error_cb');
   if @zend_eval_string = nil then raise EPHP4DelphiException.Create('zend_eval_string');
   if @zend_make_compiled_string_description = nil then raise EPHP4DelphiException.Create('zend_make_compiled_string_description');
+
+  {$IFDEF PHP4}
   if @_zval_dtor = nil then raise EPHP4DelphiException.Create('_zval_dtor');
   if @_zval_copy_ctor = nil then raise EPHP4DelphiException.Create('_zval_copy_ctor');
+  {$ELSE}
+  if @_zval_dtor_func = nil then raise EPHP4DelphiException.Create('_zval_dtor_func');
+  if @_zval_copy_ctor_func = nil then raise EPHP4DelphiException.Create('_zval_ctor_func');
+ {$ENDIF}
+
   if @zend_print_variable = nil then raise EPHP4DelphiException.Create('zend_print_variable');
   if @zend_stack_init = nil then raise EPHP4DelphiException.Create('zend_stack_init');
   if @zend_stack_push = nil then raise EPHP4DelphiException.Create('zend_stack_push');
@@ -1841,12 +1901,17 @@ begin
   result := ts_resource_ex(id, nil);
 end;
 
+function tsrmls_fetch : pointer;
+begin
+  result := ts_resource_ex(0, nil);
+end;
 
+{$IFDEF PHP4}
 function zval_copy_ctor(val : pzval) : integer;
 begin
   result := _zval_copy_ctor(val, nil, 0);
 end;
-
+{$ENDIF}
 
 function zend_unregister_functions(functions : pzend_function_entry; count : integer; function_table : PHashTable; TSRMLS_DC : pointer) : integer;
 var
@@ -2044,6 +2109,46 @@ begin
   Result := Z_OBJ_HT(z)^.get_properties(@z, TSRMLS_DC);
 end;
 
+
+{$ENDIF}
+
+{$IFDEF PHP5}
+procedure  _zval_copy_ctor (val: pzval; __zend_filename: PChar; __zend_lineno: uint);
+begin
+  if val^._type <= IS_BOOL then
+   Exit
+    else
+      _zval_copy_ctor_func(val, __zend_filename, __zend_lineno);
+end;
+
+procedure _zval_dtor(val: pzval; __zend_filename: PChar; __zend_lineno: uint);
+begin
+  if val^._type <= IS_BOOL then
+   Exit
+     else
+       _zval_dtor_func(val, __zend_filename, __zend_lineno);
+end;
+
+function zend_hash_init (ht : PHashTable; nSize : uint; pHashFunction : pointer; pDestructor : pointer; persistent: zend_bool) : integer;
+begin
+  Result := _zend_hash_init(ht, nSize, pHashFunction, pDestructor, persistent, nil, 0);
+end;
+
+function zend_hash_add_or_update(ht : PHashTable; arKey : PChar;
+    nKeyLength : uint; pData : pointer; nDataSize : uint; pDes : pointer;
+    flag : integer) : integer;
+begin
+  if Assigned(_zend_hash_add_or_update) then
+   Result := _zend_hash_add_or_update(ht, arKey, nKeyLength, pData, nDataSize, pDes, flag, nil, 0)
+     else
+       Result := FAILURE;
+end;
+
+function zend_hash_init_ex (ht : PHashTable;  nSize : uint; pHashFunction : pointer;
+ pDestructor : pointer;  persistent : zend_bool;  bApplyProtection : zend_bool): integer;
+begin
+  Result := _zend_hash_init_ex(ht, nSize, pHashFunction, pDestructor, persistent, bApplyProtection, nil, 0);
+end;
 
 {$ENDIF}
 

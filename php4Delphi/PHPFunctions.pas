@@ -111,6 +111,7 @@ type
     FTag       : integer;
     FFunctionParams: TFunctionParams;
     FZendVar : TZendVariable;
+    FDescription: string;
     procedure SetFunctionParams(const Value: TFunctionParams);
   public
     ReturnValue : variant;
@@ -125,6 +126,7 @@ type
     property Tag  : integer read FTag write FTag;
     property Parameters: TFunctionParams read FFunctionParams write SetFunctionParams;
     property OnExecute : TPHPExecute read FOnExecute write FOnExecute;
+    property Description : string read FDescription write FDescription;
   end;
 
   TPHPFunctions = class(TCollection)
@@ -282,6 +284,7 @@ end;
 
 destructor TPHPFunction.Destroy;
 begin
+  FOnExecute := nil;
   FFunctionParams.Free;
   FZendVar.Free;
   inherited;

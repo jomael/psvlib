@@ -26,7 +26,6 @@ package php4DelphiD7;
 {$DESCRIPTION 'php4Delphi (design-time)'}
 {$DESIGNONLY}
 {$IMPLICITBUILD OFF}
-{$DEFINE EUREKALOG}
 
 requires
   rtl,

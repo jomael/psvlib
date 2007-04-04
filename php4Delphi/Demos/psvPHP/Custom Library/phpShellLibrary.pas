@@ -28,8 +28,6 @@ type
                             ThisPtr: Pzval; TSRMLS_DC: Pointer);
   public
     procedure Refresh; override;
-  published
-    property  Executor;
   end;
 
 procedure Register;

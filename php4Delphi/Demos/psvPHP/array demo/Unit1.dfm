@@ -13,6 +13,8 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Button1: TButton
@@ -33,13 +35,11 @@ object Form1: TForm1
     TabOrder = 1
   end
   object psvPHP1: TpsvPHP
-    Constants = <>
     Variables = <>
     Left = 20
     Top = 16
   end
   object PHPLibrary1: TPHPLibrary
-    Executor = psvPHP1
     LibraryName = 'ArrayLib'
     Functions = <
       item
@@ -50,5 +50,11 @@ object Form1: TForm1
       end>
     Left = 52
     Top = 16
+  end
+  object PHPEngine: TPHPEngine
+    Constants = <>
+    ReportDLLError = False
+    Left = 44
+    Top = 112
   end
 end

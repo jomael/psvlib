@@ -55,9 +55,11 @@ arg : PChar;
 str : string;
 param : pzval_array;
 begin
+ {$IFDEF PHP510}
  if return_value_ptr = nil then
   begin
   end;
+  {$ENDIF}
 
   if ht = 0 then
   begin

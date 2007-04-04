@@ -29,9 +29,12 @@ type
     Button2: TButton;
     Button3: TButton;
     psvPHP1: TpsvPHP;
+    PHPEngine: TPHPEngine;
     procedure Button1Click(Sender: TObject);
     procedure Button2Click(Sender: TObject);
     procedure Button3Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -58,6 +61,16 @@ end;
 procedure TForm1.Button3Click(Sender: TObject);
 begin
   ShowMessage(psvPHP1.RunCode(Memo3.Lines.text));
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  PHPEngine.StartupEngine;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  PHPEngine.ShutdownAndWaitFor;
 end;
 
 end.

@@ -14,7 +14,6 @@
 library php4App;
 uses
   Windows,
-  Classes,
   SysUtils,
   ZendTypes,
   PHPTypes,

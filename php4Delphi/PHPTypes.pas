@@ -130,6 +130,7 @@ type
 
 type
   TRequestType = (rtGet, rtPut, rtPost, rtHead);
+  TPHPRequestType = (prtGet, prtPost);
 
 type
   Psapi_header_struct = ^Tsapi_header_struct;
@@ -303,6 +304,9 @@ type
       input_filter : pointer;
       ini_defaults : pointer;
       phpinfo_as_text : integer;
+      {$IFDEF PHP520}
+      ini_entries : PChar;
+      {$ENDIF}
       {$ENDIF}
     end;
    Tsapi_module_struct = sapi_module_struct;

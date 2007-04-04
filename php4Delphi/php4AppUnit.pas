@@ -262,7 +262,9 @@ begin
 
    php_request_startup(TSRMLS_D);
    result := php_execute_script(@file_handle, TSRMLS_D);
+   {$IFDEF PHP5}
    zend_destroy_file_handle(@file_handle, TSRMLS_D);
+   {$ENDIF}
    PrepareResult(RequestID, TSRMLS_D);
    php_request_shutdown(nil);
   except
@@ -358,6 +360,7 @@ begin
      end;
 
     StrLCopy(Buffer, PChar(TPHPInfoBlock(RequestID).FBuffer), BufLen -1);
+    TPHPInfoBlock(RequestID).FBuffer := '';
     Result := 0;
   except
      Result := REQUEST_ID_NOT_FOUND;
@@ -496,6 +499,7 @@ begin
   if RequestID <= 0 then Exit;
 
   try
+     TPHPInfoBlock(RequestID).FBuffer := '';
      TPHPInfoBlock(RequestID).Free;
      TPHPInfoBlock(RequestID) := nil;
   except

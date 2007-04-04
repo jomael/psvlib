@@ -53,7 +53,7 @@ type
   end;
 
 
-const php4DelphiVersion = '6.2';
+const php4DelphiVersion = '7.0';
 
 implementation
 
