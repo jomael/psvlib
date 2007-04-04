@@ -1,10 +1,8 @@
-program Project1;
-
-{%ToDo 'Project1.todo'}
+program Sample1;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {frmPHPDemo},
+  frm_phpDemo in 'frm_phpDemo.pas' {frmPHPDemo},
   zendAPI,
   php4delphi,
   phpAPI;

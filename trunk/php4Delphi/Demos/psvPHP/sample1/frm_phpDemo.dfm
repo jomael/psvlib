@@ -13,6 +13,7 @@ object frmPHPDemo: TfrmPHPDemo
   OldCreateOrder = False
   Position = poScreenCenter
   OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Splitter1: TSplitter
@@ -20,6 +21,7 @@ object frmPHPDemo: TfrmPHPDemo
     Top = 0
     Width = 4
     Height = 465
+    Cursor = crHSplit
     Align = alRight
   end
   object pnlButtons: TPanel
@@ -155,7 +157,6 @@ object frmPHPDemo: TfrmPHPDemo
     end
   end
   object psvPHP: TpsvPHP
-    Constants = <>
     Variables = <
       item
         Name = 'test'
@@ -165,9 +166,8 @@ object frmPHPDemo: TfrmPHPDemo
         Name = 'tool'
         Value = 'Delphi'
       end>
-    HTMLErrors = True
-    HandleErrors = False
-    OnLogMessage = psvPHPLogMessage
+    OnReadPost = psvPHPReadPost
+    RequestType = prtPost
     Left = 116
     Top = 28
   end
@@ -176,5 +176,16 @@ object frmPHPDemo: TfrmPHPDemo
     Filter = 'PHP script (*.php)|*.php|Any File (*.*)|*.*'
     Left = 196
     Top = 132
+  end
+  object PHPEngine: TPHPEngine
+    OnLogMessage = psvPHPLogMessage
+    Constants = <>
+    ReportDLLError = False
+    Left = 72
+    Top = 124
+  end
+  object PHPSystemLibrary1: TPHPSystemLibrary
+    Left = 248
+    Top = 100
   end
 end
