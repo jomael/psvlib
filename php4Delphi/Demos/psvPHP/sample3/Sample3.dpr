@@ -1,11 +1,10 @@
-program Project1;
+program Sample3;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1},
-  PHP4Delphi;
+  Unit1 in 'Unit1.pas' {Form1};
 
-{$R *.RES}
+{$R *.res}
 
 begin
   Application.Initialize;

@@ -1,8 +1,8 @@
-program Project1;
+program ExtDemo;
 
 uses
   Forms,
-  Unit1 in 'Unit1.pas' {Form1};
+  DemoMain in 'DemoMain.pas' {Form1};
 
 {$R *.RES}
 

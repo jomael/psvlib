@@ -9,15 +9,16 @@
 
 {$I PHP.INC}
 
-unit Unit1;
+unit frm_phpDemo;
 
-{ $Id: Unit1.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: frm_phpDemo.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 interface
 
 uses
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, Dialogs,
-  OleCtrls, SHDocVw, StdCtrls, ExtCtrls, ActiveX,  php4delphi, PHPCommon;
+  OleCtrls, SHDocVw, StdCtrls, ExtCtrls, ActiveX,  php4delphi, PHPCommon,
+  PHPCustomLibrary, phpLibrary;
 
 type
   TfrmPHPDemo = class(TForm)
@@ -34,10 +35,14 @@ type
     Splitter1: TSplitter;
     Label1: TLabel;
     Label2: TLabel;
+    PHPEngine: TPHPEngine;
+    PHPSystemLibrary1: TPHPSystemLibrary;
     procedure FormCreate(Sender: TObject);
     procedure btnExecuteFileClick(Sender: TObject);
     procedure btnExecuteCodeClick(Sender: TObject);
     procedure psvPHPLogMessage(Sender: TObject; AText: String);
+    procedure psvPHPReadPost(Sender: TObject; Stream: TStream);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -73,6 +78,7 @@ var
  Url : OleVariant;
  Doc : string;
 begin
+  PHPEngine.StartupEngine;
   Url := 'about:blank';
   Webbrowser1.Navigate2(Url);
   Doc := psvPHP.RunCode('phpinfo();');
@@ -153,6 +159,19 @@ end;
 procedure TfrmPHPDemo.psvPHPLogMessage(Sender: TObject; AText: String);
 begin
   ShowMessage('Trapped ' + AText);
+end;
+
+procedure TfrmPHPDemo.psvPHPReadPost(Sender: TObject; Stream: TStream);
+var
+  PostData : string;
+begin
+  PostData :='postname=postvalue'#0;
+  Stream.Write(PostData[1], length(PostData));
+end;
+
+procedure TfrmPHPDemo.FormDestroy(Sender: TObject);
+begin
+   PHPEngine.ShutdownEngine;
 end;
 
 end.
