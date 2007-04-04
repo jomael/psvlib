@@ -17,7 +17,10 @@ type
     memoScript: TMemo;
     MemoResult: TMemo;
     psvPHP: TpsvPHP;
+    PHPEngine: TPHPEngine;
     procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -34,6 +37,16 @@ implementation
 procedure TfrmPHPTest.Button1Click(Sender: TObject);
 begin
   MemoResult.Text := psvPHP.RunCode(memoScript.Text);
+end;
+
+procedure TfrmPHPTest.FormCreate(Sender: TObject);
+begin
+   PHPEngine.StartupEngine;
+end;
+
+procedure TfrmPHPTest.FormDestroy(Sender: TObject);
+begin
+   PHPEngine.ShutdownAndWaitFor;
 end;
 
 end.

@@ -1,11 +1,15 @@
+{$I PHP.INC}
+
 unit uMain;
 
 interface
 
 uses
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
+  Windows, Messages, SysUtils,
+  {$IFDEF VERSION6}Variants, {$ENDIF}
+  Classes, Graphics, Controls, Forms,
   Dialogs, StdCtrls, php4delphi, PHPCustomLibrary, phpLibrary, phpFunctions,
-  ZendTypes;
+  ZendTypes, PHPCommon;
 
 type
   TfrmMain = class(TForm)
@@ -32,12 +36,15 @@ type
     Errors: TMemo;
     Label1: TLabel;
     PHPLibrary1: TPHPLibrary;
+    PHPEngine: TPHPEngine;
     procedure btnEncryptClick(Sender: TObject);
     procedure btnDecryptClick(Sender: TObject);
     procedure btnCloseClick(Sender: TObject);
     procedure PHPLibrary1Functions0Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
       ThisPtr: Pzval; TSRMLS_DC: Pointer);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -120,6 +127,16 @@ procedure TfrmMain.PHPLibrary1Functions0Execute(Sender: TObject;
   TSRMLS_DC: Pointer);
 begin
    Errors.Lines.Add(Parameters[0].Value);
+end;
+
+procedure TfrmMain.FormCreate(Sender: TObject);
+begin
+  PHPEngine.StartupEngine;
+end;
+
+procedure TfrmMain.FormDestroy(Sender: TObject);
+begin
+  PHPEngine.ShutdownEngine;
 end;
 
 end.

@@ -48,6 +48,8 @@ type
 var
   DelphiTable : array [0..12] of zend_function_entry;
 
+ author_class_entry   : Tzend_class_entry;
+ delphi_object_entry  : TZend_class_entry;
 
  object_functions    : array[0..2] of zend_function_entry;
  author_functions    : array[0..2] of zend_function_entry;
@@ -358,7 +360,14 @@ var
  prop  : pzend_overloaded_element;
  p : pointer;
  propname : string;
- pt : TTypeKind;
+// --> hupu, 2006.06.01
+// pt : TTypeKind;
+{$IFDEF VERSION7}
+ Scripter : TPHPScriptableObject;
+{$ELSE}
+ pt : TypInfo.TTypeKind;
+{$ENDIF}
+// <-- hupu, 2006.06.01
 begin
   element :=  property_reference^.elements_list^.head;
   p := @element^.data;
@@ -370,6 +379,20 @@ begin
   zend_hash_find(this_ptr^.value.obj.properties, 'instance', strlen('instance') + 1, data);
   Obj := TObject(data^^^.value.lval);
   freemem(data);
+
+// --> hupu, 2006.06.01
+{$IFDEF VERSION7}
+  Scripter := TPHPScriptableObject(Obj);
+  if SameText('Parent', propname) then
+   begin
+     TWinControl(Scripter.InstanceObj).Parent :=
+     TWinControl(value^.value.lval);
+   end
+     else
+       Scripter.SetPropertyByID(Scripter.NameToDispID(propname),
+        [zval2variant(value^)] );
+{$ELSE}
+// <-- hupu, 2006.06.01
 
   pt := PropType(Obj, propname);
   if ( pt in SimpleProps) then
@@ -396,6 +419,9 @@ begin
              end;
          end;
 
+// --> hupu, 2006.06.01
+{$ENDIF}
+// <-- hupu, 2006.06.01
   Result := SUCCESS;
 end;
 
@@ -410,7 +436,14 @@ var
  prop  : pzend_overloaded_element;
  p : pointer;
  propname : string;
- pt : TTypeKind;
+// --> hupu, 2006.06.01
+// pt : TTypeKind;
+{$IFDEF VERSION7}
+ Scripter : TPHPScriptableObject;
+{$ELSE}
+ pt : TypInfo.TTypeKind;
+{$ENDIF}
+// <-- hupu, 2006.06.01
 begin
   element :=  property_reference^.elements_list^.head;
   p := @element^.data;
@@ -421,6 +454,21 @@ begin
   zend_hash_find(this_ptr^.value.obj.properties, 'instance', strlen('instance') + 1, data);
   Obj := TObject(data^^^.value.lval);
   freemem(data);
+
+// --> hupu, 2006.06.01
+{$IFDEF VERSION7}
+Scripter := TPHPScriptableObject(Obj);
+if SameText('Parent', propname) then
+begin
+TWinControl(Scripter.InstanceObj).Parent :=
+TWinControl(val^.value.lval);
+end
+else
+
+Scripter.SetPropertyByID(Scripter.NameToDispID(propname),
+[zval2variant(val^)] );
+{$ELSE}
+// <-- hupu, 2006.06.01
   pt := PropType(Obj, propname);
   if ( pt in SimpleProps) then
    variant2zval(GetPropValue(OBJ, propname), val)
@@ -445,6 +493,9 @@ begin
                     Obj := GetObjectProp(Obj, propname);
              end;
          end;
+// --> hupu, 2006.06.01
+{$ENDIF}
+// <-- hupu, 2006.06.01
 end;
 
 
@@ -699,7 +750,7 @@ begin
   fnc := emalloc(sizeof(TZendFunction));
   FillChar(fnc^, sizeOf(TZendFunction), 0);
   fnc^.internal_function._type := ZEND_OVERLOADED_FUNCTION;
-  fnc^.internal_function.function_name := estrndup(method_name, method_len);
+  fnc^.internal_function.function_name := strdup(method_name);
   fnc^.internal_function.handler := @delphi_call_method;
   result := fnc;
 end;
@@ -943,15 +994,14 @@ end;
 
 
 procedure RegisterInternalClasses(p : pointer);
-var
- author_class_entry   : Tzend_class_entry;
- delphi_object_entry  : TZend_class_entry;
 
 begin
   object_functions[0].fname := 'delphi_classname';
   object_functions[0].handler := @delphi_object_classname;
   object_functions[1].fname := 'delphi_classnameis';
   object_functions[1].handler := @delphi_object_classnameis;
+  object_functions[2].fname := nil;
+  object_functions[2].handler := nil;
   INIT_CLASS_ENTRY(delphi_object_entry, 'delphi_class' , @object_functions);
   {$IFDEF PHP4}
   Delphi_Object_Entry.handle_property_get :=  @_delphi_get_property_wrapper;
@@ -970,6 +1020,8 @@ begin
   author_functions[0].handler := @delphi_send_email;
   author_functions[1].fname := 'visit_homepage';
   author_functions[1].handler := @delphi_visit_homepage;
+  author_functions[2].fname := nil;
+  author_functions[2].handler := nil;
   INIT_CLASS_ENTRY(author_class_entry, 'php4delphi_author', @author_functions);
   ce := zend_register_internal_class(@author_class_entry, p);
 

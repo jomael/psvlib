@@ -13,6 +13,8 @@ object Form1: TForm1
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object PaintBox: TPaintBox
@@ -20,6 +22,7 @@ object Form1: TForm1
     Top = 0
     Width = 512
     Height = 512
+    OnPaint = PaintBoxPaint
   end
   object btnExecute: TButton
     Left = 524
@@ -30,28 +33,7 @@ object Form1: TForm1
     TabOrder = 0
     OnClick = btnExecuteClick
   end
-  object cbKeepSession: TCheckBox
-    Left = 524
-    Top = 44
-    Width = 97
-    Height = 17
-    Caption = 'Keep Session'
-    TabOrder = 1
-  end
   object psvPHP: TpsvPHP
-    Constants = <
-      item
-        Name = 'MinT'
-        Value = '0'
-      end
-      item
-        Name = 'MaxT'
-        Value = '82'
-      end
-      item
-        Name = 'Steps'
-        Value = '2000'
-      end>
     Variables = <
       item
         Name = 'X'
@@ -67,5 +49,28 @@ object Form1: TForm1
       end>
     Left = 236
     Top = 36
+  end
+  object PHPEngine: TPHPEngine
+    Constants = <
+      item
+        Name = 'MinT'
+        Value = '0'
+      end
+      item
+        Name = 'MaxT'
+        Value = '82'
+      end
+      item
+        Name = 'Steps'
+        Value = '2000'
+      end>
+    ReportDLLError = False
+    Left = 172
+    Top = 212
+  end
+  object PHPLibrary1: TPHPLibrary
+    Functions = <>
+    Left = 404
+    Top = 172
   end
 end

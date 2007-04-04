@@ -25,10 +25,13 @@ type
     PHPLibrary1: TPHPLibrary;
     Button1: TButton;
     ListBox1: TListBox;
+    PHPEngine: TPHPEngine;
     procedure PHPLibrary1Functions0Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
       ThisPtr: Pzval; TSRMLS_DC: Pointer);
     procedure Button1Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -88,6 +91,16 @@ begin
   ListBox1.Items.Clear;
   for cnt := 0 to Length(ar) - 1 do
    ListBox1.Items.Add(ar[cnt]);
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  PHPEngine.StartupEngine;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+   PHPEngine.ShutdownEngine;
 end;
 
 end.

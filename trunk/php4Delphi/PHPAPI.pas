@@ -72,6 +72,8 @@ procedure phperror(Error : PChar);
 
 var
 
+php_default_post_reader : procedure;
+
 //php_string.h
 php_strtoupper: function  (s : PChar; len : size_t) : PChar; cdecl;
 php_strtolower: function  (s : PChar; len : size_t) : PChar; cdecl;
@@ -198,6 +200,8 @@ php_error_docref: procedure (const docref : PChar; TSRMLS_DC : pointer; _type : 
 php_error_docref1: procedure (const docref : PChar; TSRMLS_DC : pointer; const param1 : PChar; _type: integer; Msg : PChar); cdecl;
 php_error_docref2: procedure (const docref : PChar; TSRMLS_DC : pointer; const param1 : PChar; const param2 : PChar; _type : integer; Msg : PChar); cdecl;
 
+sapi_globals_id : pointer;
+core_globals_id : pointer;
 
 function GetPostVariables: pzval;
 function GetGetVariables : pzval;
@@ -237,6 +241,7 @@ type
   end;
 
 function GetPHPVersion: TPHPFileInfo;
+
 
 implementation
 
@@ -315,16 +320,13 @@ end;
 
 function GetSAPIGlobals(TSRMLS_DC : pointer) : Psapi_globals_struct;
 var
- sapi_global_id : pointer;
  sapi_globals_value : integer;
  sapi_globals : Psapi_globals_struct;
-
 begin
   Result := nil;
-  sapi_global_id := GetProcAddress(PHPLib, 'sapi_globals_id');
-  if Assigned(sapi_global_id) then
+  if Assigned(sapi_globals_id) then
    begin
-     sapi_globals_value := integer(sapi_global_id^);
+     sapi_globals_value := integer(sapi_globals_id^);
      asm
        mov ecx, sapi_globals_value
        mov edx, dword ptr tsrmls_dc
@@ -403,15 +405,13 @@ end;
 
 function GetPHPGlobals(TSRMLS_DC : pointer) : Pphp_Core_Globals;
 var
- core_global_id : pointer;
  core_globals_value : integer;
  core_globals : Pphp_core_globals;
 begin
   Result := nil;
-  core_global_id := GetProcAddress(PHPLib, 'core_globals_id');
-  if Assigned(core_global_id) then
+  if Assigned(core_globals_id) then
    begin
-     core_globals_value := integer(core_global_id^);
+     core_globals_value := integer(core_globals_id^);
      asm
        mov ecx, core_globals_value
        mov edx, dword ptr tsrmls_dc
@@ -465,6 +465,12 @@ begin
       if not LoadZend(DllFileName) then
        Exit;
     end;
+
+  sapi_globals_id                  := GetProcAddress(PHPLib, 'sapi_globals_id');
+
+  core_globals_id                  := GetProcAddress(PHPLib, 'core_globals_id');
+
+  php_default_post_reader          := GetProcAddress(PHPLib, 'php_default_post_reader');
 
   sapi_add_header_ex               := GetProcAddress(PHPLib, 'sapi_add_header_ex');
 
@@ -735,7 +741,13 @@ begin
   if @php_raw_url_decode = nil then raise EPHP4DelphiException.Create('php_raw_url_decode');
   if @php_url_encode = nil then raise EPHP4DelphiException.Create('php_url_encode');
   if @php_raw_url_encode = nil then raise EPHP4DelphiException.Create('php_raw_url_encode');
+
+  {$IFDEF PHP510}
+  if @php_register_extensions = nil then raise EPHP4DelphiException.Create('php_register_extensions');
+  {$ELSE}
   if @php_startup_extensions = nil then raise EPHP4DelphiException.Create('php_startup_extensions');
+  {$ENDIF}
+  
   if @php_error_docref0 = nil then raise EPHP4DelphiException.Create('php_error_docref0');
   if @php_error_docref = nil then raise EPHP4DelphiException.Create('php_error_docref');
   if @php_error_docref1 = nil then raise EPHP4DelphiException.Create('php_error_docref1');

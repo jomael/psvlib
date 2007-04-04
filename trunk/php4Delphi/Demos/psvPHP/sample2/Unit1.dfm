@@ -1,9 +1,10 @@
 object Form1: TForm1
   Left = 414
   Top = 391
-  Width = 344
-  Height = 154
-  Caption = 'Form1'
+  BorderStyle = bsDialog
+  Caption = 'Calculator'
+  ClientHeight = 120
+  ClientWidth = 336
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -11,6 +12,7 @@ object Form1: TForm1
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
+  Position = poScreenCenter
   PixelsPerInch = 96
   TextHeight = 13
   object Label1: TLabel
@@ -59,7 +61,6 @@ object Form1: TForm1
     OnClick = Button1Click
   end
   object psvPHP1: TpsvPHP
-    Constants = <>
     Variables = <
       item
         Name = 'x'
@@ -73,5 +74,11 @@ object Form1: TForm1
       end>
     Left = 20
     Top = 80
+  end
+  object PHPEngine: TPHPEngine
+    Constants = <>
+    ReportDLLError = False
+    Left = 76
+    Top = 84
   end
 end

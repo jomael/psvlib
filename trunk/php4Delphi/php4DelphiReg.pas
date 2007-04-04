@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: php4DelphiReg.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: php4DelphiReg.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit php4DelphiReg;
 
@@ -62,6 +62,7 @@ implementation
 
 procedure Register;
 begin
+  RegisterComponents('PHP', [TPHPEngine]);
   RegisterComponents('PHP', [TpsvPHP]);
   RegisterComponents('PHP', [TPHPLibrary]);
   RegisterComponents('PHP', [TPHPClass]);

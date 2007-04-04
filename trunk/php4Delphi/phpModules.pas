@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: phpModules.pas,v 6.2 01/2007 delphi32 Exp $ }
+{ $Id: phpModules.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 
 unit phpModules;
@@ -110,14 +110,8 @@ type
     procedure DeactivatePHPModule(DataModule: TPHPExtension); dynamic;
     procedure DoHandleException(E: Exception); dynamic;
     procedure OnExceptionHandler(Sender: TObject; E: Exception);
-
-    {$IFDEF PHP510}
     procedure HandleRequest(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
       return_value_used : integer; TSRMLS_DC : pointer);
-    {$ELSE}
-    procedure HandleRequest(ht : integer; return_value : pzval; this_ptr : pzval;
-      return_value_used : integer; TSRMLS_DC : pointer);
-    {$ENDIF}
   public
     constructor Create(AOwner: TComponent); override;
     destructor  Destroy; override;
@@ -284,7 +278,7 @@ begin
   ZVAL_NULL(return_value);
   if Assigned(Application) then
    try
-     Application.HandleRequest(ht, return_value, this_ptr, return_value_used, TSRMLS_DC);
+     Application.HandleRequest(ht, return_value, nil, this_ptr, return_value_used, TSRMLS_DC);
    except
    end;
 end;
@@ -311,18 +305,8 @@ begin
     ModuleEntry.size := sizeof(Tzend_module_entry);
     ModuleEntry.zend_api := ZEND_MODULE_API_NO;
     ModuleEntry.zts := USING_ZTS;
-    {$IFDEF PHP520}
-    ModuleEntry.Name := StrNew(PChar(Extension.ModuleName));
-    ModuleEntry.version := StrNew(PChar(Extension.Version));
-    {$ELSE}
-    {$IFDEF PHP510}
-    ModuleEntry.Name := estrndup(PChar(Extension.ModuleName), length(extension.ModuleName));
-    ModuleEntry.version := estrndup(PChar(Extension.Version), length(Extension.Version));
-    {$ELSE}
-    ModuleEntry.Name := StrNew(PChar(Extension.ModuleName));
-    ModuleEntry.version := StrNew(PChar(Extension.Version));
-    {$ENDIF}
-    {$ENDIF}
+    ModuleEntry.Name := strdup(PChar(Extension.ModuleName));
+    ModuleEntry.version := strdup(PChar(Extension.Version));
     ModuleEntry.module_startup_func :=  @minit;
     ModuleEntry.module_shutdown_func := @mshutdown;
     ModuleEntry.request_startup_func := @rinit;
@@ -331,15 +315,7 @@ begin
     SetLength(module_entry_table, Extension.FFunctions.Count + 1);
     for cnt := 0 to Extension.FFunctions.Count - 1 do
     begin
-      {$IFDEF PHP520}
-      module_entry_table[cnt].fname := StrNew(PChar(Extension.FFunctions[cnt].FunctionName));
-      {$ELSE}
-      {$IFDEF PHP510}
-      module_entry_table[cnt].fname := estrndup(PChar(Extension.FFunctions[cnt].FunctionName), length(Extension.FFunctions[cnt].FunctionName));
-      {$ELSE}
-      module_entry_table[cnt].fname := StrNew(PChar(Extension.FFunctions[cnt].FunctionName));
-      {$ENDIF}
-      {$ENDIF}
+      module_entry_table[cnt].fname := strdup(PChar(Extension.FFunctions[cnt].FunctionName));
       module_entry_table[cnt].handler := @DispatchRequest;
       {$IFDEF PHP4}
       module_entry_table[cnt].func_arg_types := nil;
@@ -616,13 +592,8 @@ end;
 
 
 
-{$IFDEF PHP510}
 procedure TPHPApplication.HandleRequest(ht: integer;  return_value : pzval; return_value_ptr : ppzval;
   this_ptr: pzval; return_value_used: integer;  TSRMLS_DC: pointer);
-{$ELSE}
-procedure TPHPApplication.HandleRequest(ht: integer;  return_value : pzval;
-  this_ptr: pzval; return_value_used: integer;  TSRMLS_DC: pointer);
-{$ENDIF}
 var
   DataModule: TPHPExtension;
   cnt : integer;

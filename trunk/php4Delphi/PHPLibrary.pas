@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: PHPLibrary.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: PHPLibrary.pas,v 7.0 02/2006 delphi32 Exp $ }
 
 unit phpLibrary;
 
@@ -19,12 +19,15 @@ interface
   {$IFDEF VERSION6}
   Variants,
   {$ENDIF}
-  ZendTypes, ZendAPI, PHPTypes, PHPAPI, phpCustomLibrary, phpFunctions;
+  ZendTypes, ZendAPI,
+  PHPTypes,
+  PHPAPI,
+  phpCustomLibrary,
+  phpFunctions;
 
 type
   TPHPLibrary = class(TCustomPHPLibrary)
   published
-    property Executor;
     property LibraryName;
     property Functions;
   end;
@@ -51,7 +54,7 @@ type
     function GetInputArgAsFloat(AIndex:integer):double;
     function GetInputArgAsDateTime(AIndex:integer):TDateTime;
   public
-    procedure RegisterMethod(AName : string; AProc : TDispatchProc; AParams : array of TParamType); virtual;
+    procedure RegisterMethod(AName : string; ADescription : string; AProc : TDispatchProc; AParams : array of TParamType); virtual;
     constructor Create(AOwner : TComponent); override;
     destructor  Destroy; override;
   end;
@@ -99,11 +102,10 @@ type
      procedure RandomProc;
     public
      procedure Refresh; override;
-    published
-     property Executor;
     end;
 
 implementation
+
 { TPHPSimpleLibrary }
 
 function VarToInteger(v:variant):integer;
@@ -152,16 +154,19 @@ end;
 procedure TPHPSimpleLibrary._Execute(Sender: TObject;
   Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
   TSRMLS_DC: Pointer);
+var
+ ActiveFunctionName : string;
 begin
   if not VarIsEmpty(FRetValue) then
    VarClear(FRetValue);
   FParams := Parameters;
+  ActiveFunctionName := get_active_function_name(TSRMLS_DC);
   TDispatchObject(FMethods.Objects[FMethods.IndexOf(ActiveFunctionName)]).Proc;
   if not VarIsEmpty(FRetValue) then
    ReturnValue := FRetValue;
 end;
 
-procedure TPHPSimpleLibrary.RegisterMethod(AName: string;
+procedure TPHPSimpleLibrary.RegisterMethod(AName: string; ADescription : string;
   AProc: TDispatchProc; AParams: array of TParamType);
 var
  Func  : TPHPFunction;
@@ -171,6 +176,7 @@ var
 begin
   Func := TPHPFunction(Functions.Add);
   Func.FunctionName := LowerCase(AName);
+  Func.Description := ADescription;
 
   for cnt := 0 to Length(AParams) - 1 do
    begin
@@ -242,43 +248,43 @@ end;
 procedure TPHPSystemLibrary.Refresh;
 begin
   Functions.Clear;
-  RegisterMethod( 'sys_UpperCase',          UpperCaseProc, [tpString] ) ;
-  RegisterMethod( 'sys_LowerCase',          LowerCaseProc, [tpString] );
-  RegisterMethod( 'sys_CompareStr',         CompareStrProc, [tpString, tpString] );
-  RegisterMethod( 'sys_CompareText',        CompareTextProc, [tpString, tpString] );
-  RegisterMethod( 'sys_AnsiUpperCase',      AnsiUpperCaseProc, [tpString] );
-  RegisterMethod( 'sys_AnsiLowerCase',      AnsiLowerCaseProc, [tpString] );
-  RegisterMethod( 'sys_AnsiCompareStr',     AnsiCompareStrProc, [tpString, tpString] );
-  RegisterMethod( 'sys_AnsiCompareText',    AnsiCompareTextProc, [tpString, tpString] );
-  RegisterMethod( 'sys_IsValidIdent',       IsValidIdentProc, [tpString] );
-  RegisterMethod( 'sys_IntToStr',           IntToStrProc, [tpInteger] );
-  RegisterMethod( 'sys_IntToHex',           IntToHexProc, [tpInteger, tpInteger] );
-  RegisterMethod( 'sys_StrToInt',           StrToIntProc, [tpString] );
-  RegisterMethod( 'sys_StrToIntDef',        StrToIntDefProc, [tpString, tpInteger] );
-  RegisterMethod( 'sys_FloatToStr',         FloatToStrProc, [tpFloat] );
-  RegisterMethod( 'sys_FormatFloat',        FormatFloatProc, [tpString, tpFloat] );
-  RegisterMethod( 'sys_StrToFloat',         StrToFloatProc, [tpString] );
-  RegisterMethod( 'sys_EncodeDate',         EncodeDateProc, [tpInteger, tpInteger, tpInteger] );
-  RegisterMethod( 'sys_EncodeTime',         EncodeTimeProc, [tpInteger, tpInteger, tpInteger, tpInteger] );
-  RegisterMethod( 'sys_DayOfWeek',          DayOfWeekProc, [tpFloat] );
-  RegisterMethod( 'sys_Date',               DateProc, [] );
-  RegisterMethod( 'sys_Time',               TimeProc, [] );
-  RegisterMethod( 'sys_Now',                NowProc, [] );
-  RegisterMethod( 'sys_IncMonth',           IncMonthProc, [tpFloat, tpInteger] );
-  RegisterMethod( 'sys_IsLeapYear',         IsLeapYearProc, [tpInteger] );
-  RegisterMethod( 'sys_DateToStr',          DateToStrProc, [tpFloat] );
-  RegisterMethod( 'sys_TimeToStr',          TimeToStrProc, [tpFloat] );
-  RegisterMethod( 'sys_DateTimeToStr',      DateTimeToStrProc, [tpFloat] );
-  RegisterMethod( 'sys_StrToDate',          StrToDateProc, [tpString] );
-  RegisterMethod( 'sys_StrToTime',          StrToTimeProc, [tpString] );
-  RegisterMethod( 'sys_StrToDateTime',      StrToDateTimeProc, [tpString] );
-  RegisterMethod( 'sys_Beep',               BeepProc, [] );
-  RegisterMethod( 'sys_Round',              RoundProc, [tpFloat] );
-  RegisterMethod( 'sys_Trunc',              TruncProc, [tpFloat] );
-  RegisterMethod( 'sys_Copy',               CopyProc, [tpString, tpInteger, tpInteger] );
-  RegisterMethod( 'sys_Pos',                PosProc, [tpString, tpString] );
-  RegisterMethod( 'sys_Length',             LengthProc, [tpString] );
-  RegisterMethod( 'sys_Random',             RandomProc, [] );
+  RegisterMethod( 'sys_UpperCase',          'Returns a copy of a string in uppercase.', UpperCaseProc, [tpString] ) ;
+  RegisterMethod( 'sys_LowerCase',          'Converts an ASCII string to lowercase.', LowerCaseProc, [tpString] );
+  RegisterMethod( 'sys_CompareStr',         'Compares two strings case sensitively.', CompareStrProc, [tpString, tpString] );
+  RegisterMethod( 'sys_CompareText',        'Compares two strings by ordinal value without case sensitivity.', CompareTextProc, [tpString, tpString] );
+  RegisterMethod( 'sys_AnsiUpperCase',      'Converts a string to upper case.', AnsiUpperCaseProc, [tpString] );
+  RegisterMethod( 'sys_AnsiLowerCase',      'Returns a string that is a copy of the given string converted to lower case.', AnsiLowerCaseProc, [tpString] );
+  RegisterMethod( 'sys_AnsiCompareStr',     'Compares strings based on the current Windows locale with case sensitivity.', AnsiCompareStrProc, [tpString, tpString] );
+  RegisterMethod( 'sys_AnsiCompareText',    'Compares strings based on the current Windows locale without case sensitivity', AnsiCompareTextProc, [tpString, tpString] );
+  RegisterMethod( 'sys_IsValidIdent',       'Tests for a valid Pascal identifier.', IsValidIdentProc, [tpString] );
+  RegisterMethod( 'sys_IntToStr',           'Converts an integer to a string.', IntToStrProc, [tpInteger] );
+  RegisterMethod( 'sys_IntToHex',           'Returns the hex representation of an integer.', IntToHexProc, [tpInteger, tpInteger] );
+  RegisterMethod( 'sys_StrToInt',           'Converts a string that represents an integer (decimal or hex notation) to a number.', StrToIntProc, [tpString] );
+  RegisterMethod( 'sys_StrToIntDef',        'Converts a string that represents an integer (decimal or hex notation) to a number.', StrToIntDefProc, [tpString, tpInteger] );
+  RegisterMethod( 'sys_FloatToStr',         'Converts a floating point value to a string.', FloatToStrProc, [tpFloat] );
+  RegisterMethod( 'sys_FormatFloat',        'Formats a floating point value.', FormatFloatProc, [tpString, tpFloat] );
+  RegisterMethod( 'sys_StrToFloat',         'Converts a given string to a floating-point value.', StrToFloatProc, [tpString] );
+  RegisterMethod( 'sys_EncodeDate',         'Returns a TDateTime value that represents a specified Year, Month, and Day.', EncodeDateProc, [tpInteger, tpInteger, tpInteger] );
+  RegisterMethod( 'sys_EncodeTime',         'Returns a TDateTime value for a specified Hour, Min, Sec, and MSec.', EncodeTimeProc, [tpInteger, tpInteger, tpInteger, tpInteger] );
+  RegisterMethod( 'sys_DayOfWeek',          'Returns the day of the week for a specified date.', DayOfWeekProc, [tpFloat] );
+  RegisterMethod( 'sys_Date',               'Returns the current date.', DateProc, [] );
+  RegisterMethod( 'sys_Time',               'Returns the current time.', TimeProc, [] );
+  RegisterMethod( 'sys_Now',                'Returns the current date and time.', NowProc, [] );
+  RegisterMethod( 'sys_IncMonth',           'Returns a date shifted by a specified number of months', IncMonthProc, [tpFloat, tpInteger] );
+  RegisterMethod( 'sys_IsLeapYear',         'Indicates whether a specified year is a leap year.', IsLeapYearProc, [tpInteger] );
+  RegisterMethod( 'sys_DateToStr',          'Converts a TDateTime value to a string.', DateToStrProc, [tpFloat] );
+  RegisterMethod( 'sys_TimeToStr',          'Returns a string that represents a TDateTime value.', TimeToStrProc, [tpFloat] );
+  RegisterMethod( 'sys_DateTimeToStr',      'Converts a TDateTime value to a string.', DateTimeToStrProc, [tpFloat] );
+  RegisterMethod( 'sys_StrToDate',          'Converts a string to a TDate value.', StrToDateProc, [tpString] );
+  RegisterMethod( 'sys_StrToTime',          'Converts a string to a TTime value.', StrToTimeProc, [tpString] );
+  RegisterMethod( 'sys_StrToDateTime',      'Converts a string to a TDateTime value.',StrToDateTimeProc, [tpString] );
+  RegisterMethod( 'sys_Beep',               'Generates a standard beep using the computer speaker.', BeepProc, [] );
+  RegisterMethod( 'sys_Round',              'Returns the value of X rounded to the nearest whole number.', RoundProc, [tpFloat] );
+  RegisterMethod( 'sys_Trunc',              'Truncates a real number to an integer.', TruncProc, [tpFloat] );
+  RegisterMethod( 'sys_Copy',               'Returns a substring of a string or a segment of a dynamic array.', CopyProc, [tpString, tpInteger, tpInteger] );
+  RegisterMethod( 'sys_Pos',                'Returns the index value of the first character in a specified substring that occurs in a given string.', PosProc, [tpString, tpString] );
+  RegisterMethod( 'sys_Length',             'Returns the number of characters in a string or elements in an array.', LengthProc, [tpString] );
+  RegisterMethod( 'sys_Random',             'Generates random numbers within a specified range.', RandomProc, [] );
 
   inherited;
 

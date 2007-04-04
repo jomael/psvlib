@@ -211,6 +211,11 @@ const
   ZEND_HANDLE_FP                                  = 2;
   ZEND_HANDLE_STDIOSTREAM                         = 3;
   ZEND_HANDLE_FSTREAM                             = 4;
+
+  {$IFDEF PHP5}
+  ZEND_HANDLE_STREAM                              = 5;
+  {$ENDIF}
+  
   ZEND_FETCH_STANDARD                             = 0;
   ZEND_FETCH_ADD_LOCK                             = 1;
   ZEND_MEMBER_FUNC_CALL                           = 1 shl 0;
@@ -233,7 +238,9 @@ const
   E_USER_ERROR                                    = (1 shl 8);
   E_USER_WARNING                                  = (1 shl 9);
   E_USER_NOTICE                                   = (1 shl 10);
-  E_ALL                                           = (E_ERROR or E_WARNING or E_PARSE or E_NOTICE or E_CORE_ERROR or E_CORE_WARNING or E_COMPILE_ERROR or E_COMPILE_WARNING or E_USER_ERROR or E_USER_WARNING or E_USER_NOTICE);
+  E_STRICT                                        = (1 shl 11);
+  E_RECOVERABLE_ERROR                             = (1 shl 12);
+  E_ALL = (E_ERROR or E_WARNING or E_PARSE or E_NOTICE or E_CORE_ERROR or E_CORE_WARNING or E_COMPILE_ERROR or E_COMPILE_WARNING or E_USER_ERROR or E_USER_WARNING or E_USER_NOTICE or E_RECOVERABLE_ERROR);
   E_CORE                                          = (E_CORE_ERROR or E_CORE_WARNING);
 
   //zend.h
@@ -683,6 +690,7 @@ type
     handle_property_set: pointer;
   end;
   {$ELSE}
+
   Tzend_class_entry = record
    _type : char;
    name : pchar;
@@ -710,6 +718,9 @@ type
    __isset : PZendFunction;
    {$ENDIF}
    __call: PZendFunction;
+   {$IFDEF PHP520}
+   __tostring : pointer;
+   {$ENDIF}
    {$IFDEF PHP510}
    serialize_func : PZendFunction;
    unserialize_func : PZendFunction;
@@ -876,16 +887,17 @@ type
 {$IFDEF PHP5}
 type
    zend_stream_reader_t = function(handle : pointer; buf : pChar; len : size_t; TSRMLS_DC : pointer) : size_t; cdecl;
-   zend_strem_closer_t = procedure(handle : pointer; TSRMLS_DC : pointer); cdecl;
+   zend_stream_closer_t = procedure(handle : pointer; TSRMLS_DC : pointer); cdecl;
+   zend_stream_fteller_t = function(handle : pointer; TSRMLS_DC : pointer) : longint; cdecl;
 
   _zend_stream = record
    handle : pointer;
-   reader : pointer;
-   closer : pointer;
+   reader : zend_stream_reader_t;
+   closer : zend_stream_closer_t;
    {$IFDEF PHP510}
-   fteller : pointer;
+   fteller : zend_stream_fteller_t;
    {$ENDIF}
-   interactive : pointer;
+   interactive : integer;
    end;
    TZendStream = _zend_stream;
    PZendStream = ^TZendStream;
@@ -1014,11 +1026,13 @@ type
     request_shutdown_func: pointer;
     info_func: pointer;
     version: pchar;
+    {$IFDEF PHP5}
     {$IFDEF PHP520}
     globals_size : size_t;
     globals_id_ptr : pointer;
     globals_ctor : pointer;
     globals_dtor : pointer;
+    {$ENDIF}
     {$ENDIF}
     {$IFDEF PHP5}
     post_deactivate_func : pointer;
