@@ -171,7 +171,7 @@ end;
 
 procedure TfrmPHPDemo.FormDestroy(Sender: TObject);
 begin
-   PHPEngine.ShutdownEngine;
+   PHPEngine.ShutdownAndWaitFor;
 end;
 
 end.

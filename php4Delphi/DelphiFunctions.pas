@@ -46,7 +46,6 @@ type
 {$ENDIF}
 
 var
-  DelphiTable : array [0..12] of zend_function_entry;
 
  author_class_entry   : Tzend_class_entry;
  delphi_object_entry  : TZend_class_entry;
@@ -61,10 +60,114 @@ var
  DelphiObjectHandlers : zend_object_handlers;
  {$ENDIF}
 
-procedure InitDelphiFunctions;
 
 procedure RegisterInternalClasses(p : pointer);
 
+
+//proto string delphi_get_system_directory(void)
+{$IFDEF PHP510}
+procedure delphi_get_system_directory(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_get_system_directory(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto string delphi_str_date(void)
+{$IFDEF PHP510}
+procedure delphi_str_date(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_str_date(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto float delphi_date(void)
+{$IFDEF PHP510}
+procedure delphi_date(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_date(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto string delphi_extract_file_dir(string source)
+{$IFDEF PHP510}
+procedure delphi_extract_file_dir(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_extract_file_dir(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto string delphi_extract_file_drive(string source)
+{$IFDEF PHP510}
+procedure delphi_extract_file_drive(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_extract_file_drive(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto string delphi_extract_file_name(string source)
+{$IFDEF PHP510}
+procedure delphi_extract_file_name(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_extract_file_name(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto string delphi_extract_file_ext(string source)
+{$IFDEF PHP510}
+procedure delphi_extract_file_ext(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_extract_file_ext(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto void delphi_show_message(string message)
+{$IFDEF PHP510}
+procedure delphi_show_message(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_show_message(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+//proto string delphi_input_box(string caption, string prompt, string default)
+{$IFDEF PHP510}
+procedure delphi_input_box(ht : integer; return_value : pzval; return_value_ptr : ppzval;
+        this_ptr : pzval;  return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_input_box(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+{$IFDEF PHP510}
+procedure register_delphi_object(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure register_delphi_object(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+{$IFDEF PHP510}
+procedure delphi_get_author(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure delphi_get_author(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
+
+{$IFDEF PHP510}
+procedure register_delphi_component(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ELSE}
+procedure register_delphi_component(ht : integer; return_value : pzval; this_ptr : pzval;
+      return_value_used : integer; TSRMLS_DC : pointer); cdecl;
+{$ENDIF}
 
 const
   SimpleProps = [tkInteger, tkChar, tkEnumeration, tkFloat,
@@ -930,65 +1033,6 @@ begin
 
   dispose_pzval_array(Param);
 
-end;
-
-
-
-procedure InitDelphiFunctions;
-begin
-  PHP_FUNCTION(DelphiTable[0], 'delphi_date', @delphi_date);
-  PHP_FUNCTION(DelphiTable[1], 'delphi_extract_file_dir', @delphi_extract_file_dir);
-  PHP_FUNCTION(DelphiTable[2], 'delphi_extract_file_drive', @delphi_extract_file_drive);
-  PHP_FUNCTION(DelphiTable[3], 'delphi_extract_file_name', @delphi_extract_file_name);
-
-  DelphiTable[4].fname := 'delphi_extract_file_ext';
-  DelphiTable[4].handler := @delphi_extract_file_ext;
-  {$IFDEF PHP4}
-  DelphiTable[4].func_arg_types := nil;
-  {$ELSE}
-  DelphiTable[4].arg_info := nil;
-  {$ENDIF}
-
-  DelphiTable[5].fname := 'delphi_show_message';
-  DelphiTable[5].handler := @delphi_show_message;
-  {$IFDEF PHP4}
-  DelphiTable[5].func_arg_types := nil;
-  {$ELSE}
-  DelphiTable[5].arg_info := nil;
-  {$ENDIF}
-
-  DelphiTable[6].fname :=  'register_delphi_object';
-  delphitable[6].handler := @register_delphi_object;
-  {$IFDEF PHP4}
-  DelphiTable[6].func_arg_types := nil;
-  {$ELSE}
-  DelphiTable[6].arg_info := nil;
-  {$ENDIF}
-
-  DelphiTable[7].fname := 'delphi_get_author';
-  DelphiTable[7].handler := @delphi_get_author;
-  {$IFDEF PHP4}
-  DelphiTable[7].func_arg_types := nil;
-  {$ELSE}
-  DelphiTable[7].arg_info := nil;
-  {$ENDIF}
-
-  DelphiTable[8].fname := 'delphi_str_date';
-  DelphiTable[8].handler := @delphi_str_date;
-  {$IFDEF PHP4}
-  DelphiTable[8].func_arg_types := nil;
-  {$ELSE}
-  DelphiTable[8].arg_info := nil;
-  {$ENDIF}
-
-
-  PHP_FUNCTION(DelphiTable[9], 'delphi_get_system_directory', @delphi_get_system_directory);
-
-
-  PHP_FUNCTION(DelphiTable[10], 'delphi_input_box', @delphi_input_box);
-  PHP_FUNCTION(DelphiTable[11], 'register_delphi_component', @register_delphi_component);
-  DelphiTable[12].fname := nil;
-  DelphiTable[12].handler := nil;
 end;
 
 

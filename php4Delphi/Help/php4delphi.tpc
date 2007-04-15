@@ -1,0 +1,1368 @@
+%FILE_VERSION%
+3
+%RICH_TEXT%
+%TITLE%
+PHP4Delphi
+%WINHELPTEMPLATE%
+Normal
+%MANUALTEMPLATE%
+Manual
+%HTMLHELPTEMPLATE%
+Normal
+%HTMLTEMPLATE%
+Web Export
+%WIN_HELP_FILE_TYPE%
+1,1,0,0
+%HTML_HELP_FILE_TYPE%
+1,1,0,0
+%HTML_FILE_TYPE%
+1,1,0,0
+%MAN_FILE_TYPE%
+1,1,0,0
+%VCL_VERSION_MASK%
+32
+%DOT_NET_VERSION_MASK%
+0
+%HELP_LANG%
+2057
+%FONTS%
+Arial
+Symbol
+Helv
+Courier
+Courier New
+%IMPORTED_FILES%
+..\phpFunctions.pas
+..\PHPCommon.pas
+..\PHPCustomLibrary.pas
+..\php4delphi.pas
+..\PHPLibrary.pas
+%TEMPUNIT%
+php4delphi
+%OVERVIEW%
+PHP4Delphi
+\par
+%DESCRIPTION%
+PHP - Delphi interface \par
+\pard\sa80 \par
+\pard\sa80 Developers: Serhiy Perevoznyk serge_perevoznyk.com \par
+\pard\sa80 \par
+\pard\sa80 Toby Allen (Documentation) tobyphp.com \par
+\pard\sa80 \par
+\pard\sa80 http://users.chello.be/ws36637 Important: Please check PHP version you are using and change php.inc file See php.inc for more details \par
+\pard\sa80 \par
+\pard\sa80 You can download the latest version of PHP from http://www.php.net/downloads.php You have to download and install PHP separately. It is not included in the package. \par
+\pard\sa80 \par
+\pard\sa80 For more information on the PHP Group and the PHP project, please see <http://www.php.net>. \par
+\pard\sa80 
+\par
+%TEMPUNIT%
+PHPCommon
+%OVERVIEW%
+PHP4Delphi
+\par
+%DESCRIPTION%
+PHP - Delphi interface \par
+\pard\sa80 \par
+\pard\sa80 Developers: Serhiy Perevoznyk serge_perevoznyk.com Michael Maroszek maroszek.net \par
+\pard\sa80 \par
+\pard\sa80 http://users.chello.be/ws36637
+\par
+%TEMPUNIT%
+PHPCustomLibrary
+%OVERVIEW%
+PHP4Delphi
+\par
+%DESCRIPTION%
+PHP - Delphi interface \par
+\pard\sa80 \par
+\pard\sa80 Author: Serhiy Perevoznyk serge_perevoznyk.com http://users.chello.be/ws36637
+\par
+%TEMPUNIT%
+phpFunctions
+%OVERVIEW%
+PHP4Delphi
+\par
+%DESCRIPTION%
+PHP - Delphi interface \par
+\pard\sa80 \par
+\pard\sa80 Author: Serhiy Perevoznyk serge_perevoznyk.com http://users.chello.be/ws36637
+\par
+%TEMPUNIT%
+phpLibrary
+%OVERVIEW%
+PHP4Delphi
+\par
+%DESCRIPTION%
+PHP - Delphi interface \par
+\pard\sa80 \par
+\pard\sa80 Author: Serhiy Perevoznyk serge_perevoznyk.com http://users.chello.be/ws36637
+\par
+%COMPONENT%
+TCustomPHPLibrary
+%OVERVIEW%
+Custom class that is used  as ancestor for all PHP libraries components\par
+%DESCRIPTION%
+Use TCustomPHPLibrary as a base class to create your own implementation of PHP library components\par
+%UNIT%
+PHPCustomLibrary
+%NAMESPACE%
+PHPCustomLibrary
+%DERIVED_FROM%
+TPHPComponent
+%METHOD%
+Refresh
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  Refresh; \b virtual\b0; \par
+%OVERVIEW%
+Perform special action before registration of the library by PHP Engine\par
+%DESCRIPTION%
+Do not call Refresh procedure directly. You have to override this method when you are implementing your own PHP library\par
+%PROPERTY%
+Functions
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Functions: TPHPFunctions; \par
+%OVERVIEW%
+ List of the available functions\par
+%DESCRIPTION%
+Use Functions property to get an access to the collection of PHP functions defined in the library\par
+%PROPERTY%
+LibraryName
+%DELPHI_SYNTAX%
+\b\f4 property\b0  LibraryName: \b string\b0; \par
+%OVERVIEW%
+Library name\par
+%DESCRIPTION%
+You can provide a name for your library (like the unit name in Delphi). \par
+The Library name is not used by PHP Engine directly, but can be useful for developer.\par
+%PROPERTY%
+Locked
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Locked: boolean; \par
+%OVERVIEW%
+Indicates that library is in use by PHP Engine\par
+%DESCRIPTION%
+Check this property before destroying PHP Library. If library is locked than PHP Engine is active and uses this library\par
+%COMPONENT%
+TDispatchObject
+%OVERVIEW%
+Uses internally by TPHPSimpleLibrary class\par
+%DESCRIPTION%
+Do not create instance of TDispatchObject directly. It is used by TPHPSimpleLibrary for registration of internal PHP functions handlers\par
+%UNIT%
+phpLibrary
+%NAMESPACE%
+phpLibrary
+%DERIVED_FROM%
+TObject
+%PROPERTY%
+Proc
+%DELPHI_SYNTAX%
+\f4 Proc: TDispatchProc; \par
+%OVERVIEW%
+Pointer to dispatching procedure\par
+%DESCRIPTION%
+Holds code that will be executed when PHP function from TPHPSimpleLibrary is called from PHP script. Uses internally by TPHPSimpleLibrary\par
+%PUBLISHED%
+%COMPONENT%
+TFunctionParam
+%OVERVIEW%
+PHP function parameter\par
+%DESCRIPTION%
+Use TFunctionParam to define names, types and values of the function parameters.\par
+When you define new PHP function you can define the function parameters as well. TFunctionParam represents one of the function parameters.\par
+TFunctionParams holds collection of all parameters for one PHP function\par
+%UNIT%
+phpFunctions
+%NAMESPACE%
+phpFunctions
+%DERIVED_FROM%
+TCollectionItem
+%PROPERTY%
+Name
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Name: \b string\b0 ; \par
+%OVERVIEW%
+ Name of the parameter\par
+%DESCRIPTION%
+ Use Name property to define the name of the function parameter\par
+%PUBLISHED%
+%PROPERTY%
+ParamType
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ParamType: TParamType; \par
+%OVERVIEW%
+ Represents the type of the function parameter.\par
+%DESCRIPTION%
+Use ParamType property to specify the type of the parameter. At run-time when function is called by PHP script PHP Engine performs type check and raises error when passed value has a wrong type. PHP4Delphi parforms more strict check for function parameters types than PHP itself\par
+%DELPHI_EXAMPLE%
+\f4 Parm := TFunctionParam(Func.Parameters.Add);\line Parm.\b Name\b0  := 'directory';\line Parm.ParamType := tpString;\f0\par
+%PUBLISHED%
+%PROPERTY%
+Value
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Value: variant; \par
+%OVERVIEW%
+Represents the value of the function parameter.\par
+%DESCRIPTION%
+Run-time function parameter value, passed to the function\par
+%DELPHI_EXAMPLE%
+\b\f4 procedure\b0  TMathExtension.CoshExecute(Sender: TObject;\line  Parameters: TFunctionParams; \b var\b0  ReturnValue: Variant; ThisPtr: Pzval;\line  TSRMLS_DC: Pointer);\line\b begin\b0\line   ReturnValue := Cosh(Parameters[0].Value);\line\b end\b0 ;\f0\par
+%PROPERTY%
+ZendValue
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ZendValue: PZVal; \par
+%OVERVIEW%
+Represents ZEND value of the function parameter.\par
+%DELPHI_EXAMPLE%
+\b\f4 procedure\b0  TPHPExtension1.PHPExtension1Functions0Execute(Sender: TObject;\line  Parameters: TFunctionParams; \b var\b0  ReturnValue: Variant; ThisPtr: pzval;\line  TSRMLS_DC: Pointer);\line\b begin\b0\line  ZVAL_STRING(Parameters[0].ZendValue, 'hello', true);\line  ZVAL_STRING(Parameters[1].ZendValue, 'world', true);\line\b end\b0 ;\f0\par
+%PROPERTY%
+ZendVariable
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ZendVariable: TZendVariable; \par
+%OVERVIEW%
+ Gives direct access to ZEND variable that is passed to the function as parameter\par
+%DELPHI_EXAMPLE%
+\b\f4 procedure\b0  TMathExtension.SinExecute(Sender: TObject;\line  Parameters: TFunctionParams; \b var\b0  ReturnValue: Variant; ThisPtr: Pzval;\line  TSRMLS_DC: Pointer);\line\b begin\b0\line  ReturnValue := Sin(Parameters[0].ZendVariable.AsFloat);\line\b end\b0 ;\f0\par
+%COMPONENT%
+TFunctionParams
+%OVERVIEW%
+Collection of PHP function parameters\par
+%DESCRIPTION%
+Each TFunctionParams holds a group of TFunctionParam objects. TFunctionParams maintains an index of the collection items in its Items array. The Count property contains the number of items in the collection. Use the Add and Clear methods to add items to the collection and delete items from the collection.\par
+%UNIT%
+phpFunctions
+%NAMESPACE%
+phpFunctions
+%DERIVED_FROM%
+TCollection
+%METHOD%
+Add
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Add: TFunctionParam; \par
+%OVERVIEW%
+ Creates a new item instance and adds it to the Items array.\par
+%DESCRIPTION%
+Call Add to create an item in the collection. The new item is placed at the end of the Items array.\par
+Add returns the new collection item.\par
+%METHOD%
+ParamByName
+%DELPHI_SYNTAX%
+\b\f4 function\b0  ParamByName(AName: \b string\b0 ): TFunctionParam; \par
+%OVERVIEW%
+Returns function parameters by parameter's name\par
+%DESCRIPTION%
+Use this method to find function parameter by name. If parameter with given name does not exists this function returns \b nil\b0\par
+%METHOD%
+Values
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Values(AName: \b string\b0 ): Variant; \par
+%OVERVIEW%
+Returns the value of the parameter by name of the parameter.\par
+%DESCRIPTION%
+Useful at run-time to find a value of the parameter using parameter's name\par
+%PROPERTY%
+Items
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Items[\b Index\b0 : Integer]: TFunctionParam; \par
+%COMPONENT%
+TPHPComponent
+%OVERVIEW%
+ Base class of PHP4Delphi library\par
+%DESCRIPTION%
+Use TPHPComponent as a base class if you want to extend PHP4Delphi library\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TComponent
+%PROPERTY%
+About
+%DELPHI_SYNTAX%
+\b\f4 property\b0  About: TPHPAboutInfo \b stored\b0  False; \par
+%OVERVIEW%
+Information about version of PHP4Delphi library\par
+%DESCRIPTION%
+This is read-only property useful at design-time\par
+%PUBLISHED%
+%COMPONENT%
+TPHPConstant
+%OVERVIEW%
+Represents PHP constant\par
+%DESCRIPTION%
+All PHP constants can be used in PHP scripts during scrip execution\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TCollectionItem
+%PROPERTY%
+Name
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Name: \b string\b0 ; \par
+%OVERVIEW%
+ Name of the PHP constant\par
+%DESCRIPTION%
+ Use this property to give PHP constant a name\par
+%PUBLISHED%
+%PROPERTY%
+Value
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Value: \b string\b0 ; \par
+%OVERVIEW%
+ Value of PHP constant\par
+%DESCRIPTION%
+ Use this property to cpecify a value of PHP constant\par
+%PUBLISHED%
+%COMPONENT%
+TPHPConstants
+%OVERVIEW%
+Collection of PHP constants\par
+%DESCRIPTION%
+Each TPHPConstants holds a group of TPHPConstant objects. TPHPConstants maintains an index of the collection items in its Items array. The Count property contains the number of items in the collection. Use the Add and Clear methods to add items to the collection and delete items from the collection.\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TCollection
+%METHOD%
+Add
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Add: TPHPConstant; \par
+%OVERVIEW%
+Creates a new item instance and adds it to the Items array.\par
+%DESCRIPTION%
+ Call Add to create an item in the collection. The new item is placed at the end of the Items array.\par
+Add returns the new collection item.\par
+%METHOD%
+IndexOf
+%DELPHI_SYNTAX%
+\b\f4 function\b0  IndexOf(AName: \b string\b0 ): integer; \par
+%PROPERTY%
+Items
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Items[\b Index\b0: Integer]: TPHPConstant; \par
+%COMPONENT%
+TPHPEngine
+%OVERVIEW%
+PHP Engine class - core object of PHP4Delphi library\par
+%DESCRIPTION%
+This component represents PHP interpreter. Only one instance per application is needed and only one instance per application is possible\par
+PHP scripts are executed by TpsvPHP components, but all of them will use one single PHP Engine even in multithreaded applications\par
+This component was introduced in version 7.0 for thread-safety reasons\par
+%UNIT%
+php4delphi
+%NAMESPACE%
+php4delphi
+%DERIVED_FROM%
+TPHPComponent
+%EVENT%
+OnEngineShutdown
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnEngineShutdown: TNotifyEvent; \par
+%OVERVIEW%
+ Occurs when PHP engine is shutdown\par
+%DESCRIPTION%
+ Use this event to perform specific action when PHP engine is shutdown\par
+%PUBLISHED%
+%EVENT%
+OnEngineStartup
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnEngineStartup: TNotifyEvent; \par
+%OVERVIEW%
+ Occurs when PHP engine is startup\par
+%DESCRIPTION%
+ Use this event to perform specific action when PHP engine is starting up\par
+%PUBLISHED%
+%EVENT%
+OnLogMessage
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnLogMessage: TPHPLogMessage; \par
+%OVERVIEW%
+Occurs when PHP interpreter writes message to log file\par
+%DESCRIPTION%
+Use this event to perform specific action when PHP engine writes messages to the log file\par
+%PUBLISHED%
+%EVENT%
+OnScriptError
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnScriptError: TPHPErrorEvent; \par
+%OVERVIEW%
+ Occurs on script error. \par
+%DESCRIPTION%
+ Write an OnScriptError event handler to perform specific actions when an error occurs within the PHP script\par
+%PUBLISHED%
+%METHOD%
+LockEngine
+%SEE_ALSO%
+php4delphi.TPHPEngine.UnlockEngine
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  LockEngine; \b virtual\b0; \par
+%OVERVIEW%
+Lock PHP engine for operation performed by specific instance of TpsvPHP component\par
+%DESCRIPTION%
+Use LockEngine method in multi-threaded applications when different instances of TpsvPHP component running in different threads have to access PHP engine.\par
+This method was introduced in version 7.0 for multithreading support.\par
+Try to minimize time when PHP engine is locked. Every procedure that locks PHP Engine must unlock it at the end.\par
+%DELPHI_EXAMPLE%
+\f4 PHPEngine.Lock;\line\b try\b0\line\b finally\b0\par
+ PHPEngine.Unlock;\line\b end\b0 ;\par
+%METHOD%
+PrepareForShutdown
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  PrepareForShutdown; \b virtual\b0; \par
+%OVERVIEW%
+Prepeare PHP engine for shutdown but keep it running\par
+%DESCRIPTION%
+All PHP scripts that are running will continue execution, but new execution requests will be not accepted.\par
+This method was introduced in version 7.0 for multithreading support.\par
+%METHOD%
+ShutdownAndWaitFor
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  ShutdownAndWaitFor; \b virtual\b0; \par
+%OVERVIEW%
+Shutdown PHP engine and wait until all running scripts will finish\par
+%DESCRIPTION%
+PHP Engine will wait untill any TpsvPHP component is in execution state and after PHP engine will shutdown.\f0\par
+This method was introduced in version 7.0 for multithreading support.\par
+%METHOD%
+ShutdownEngine
+%SEE_ALSO%
+php4delphi.TPHPEngine.PrepareForShutdown
+php4delphi.TPHPEngine.ShutdownAndWaitFor
+php4delphi.TPHPEngine.StartupEngine
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  ShutdownEngine; \b virtual\b0; \par
+%OVERVIEW%
+Shutdown PHP engine\par
+%DESCRIPTION%
+\cf13\protect\f0 TpsvPHP\cf0\protect0\v php4delphi.TpsvPHP\v0  component can execute script or run PHP code only when PHP engine is active\par
+%METHOD%
+StartupEngine
+%SEE_ALSO%
+php4delphi.TPHPEngine.PrepareForShutdown
+php4delphi.TPHPEngine.ShutdownAndWaitFor
+php4delphi.TPHPEngine.ShutdownEngine
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  StartupEngine; \b virtual\b0; \par
+%OVERVIEW%
+Startup PHP engine\par
+%DESCRIPTION%
+Startup PHP engine, load PHP functions librararies and prepeare environment for TpsvPHP components.\par
+\cf13\protect TpsvPHP\cf0\protect0\v php4delphi.TpsvPHP\v0  component can execute script or run PHP code only when PHP engine is active. Before executing PHP scripts you have to activate PHP engine by calling this method. You can shutdown PHP engine when you are closing your application or when you will stop scripts execution\par
+There is no need to shutdown PHP engine after every script execution.\par
+%METHOD%
+UnlockEngine
+%SEE_ALSO%
+php4delphi.TPHPEngine.LockEngine
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  UnlockEngine; \b virtual\b0; \par
+%OVERVIEW%
+Unlock PHP engine\par
+%DESCRIPTION%
+Unlock PHP engine, locked by calling \cf13\protect LockEngine\cf0\protect0\v php4delphi.TPHPEngine.LockEngine\v0  \par
+This method was introduced in version 7.0 for multithreading support.\par
+Try to minimize time when PHP engine is locked. Every procedure that locks PHP Engine must unlock it at the end.\par
+%PROPERTY%
+ConstantCount
+%SEE_ALSO%
+php4delphi.TPHPEngine.Constants
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ConstantCount: integer; \par
+%OVERVIEW%
+Indicates the number of PHP constants owned by the component.\par
+%DESCRIPTION%
+Use ConstantCount to determine how many PHP constants are defined by component\par
+%READONLY%
+%PROPERTY%
+Constants
+%SEE_ALSO%
+php4delphi.TPHPEngine.ConstantCount
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Constants: TPHPConstants; \par
+%OVERVIEW%
+Returns a collection of PHP constants (\cf13\protect TPHPConstants\cf0\protect0\v PHPCommon.TPHPConstants\v0 ).\par
+%PUBLISHED%
+%PROPERTY%
+DLLFolder
+%DELPHI_SYNTAX%
+\b\f4 property\b0  DLLFolder: \b string\b0; \par
+%OVERVIEW%
+Folder name where PHP DLL (php4ts.dll or php4ts.dll) is located\par
+%DESCRIPTION%
+Use DLLFolder property to specify where PHP DLL is located. Leave it empty if DLL is located in Windows system folder\par
+%PUBLISHED%
+%PROPERTY%
+EngineActive
+%DELPHI_SYNTAX%
+\b\f4 property\b0  EngineActive: boolean; \par
+%OVERVIEW%
+Indicates whether or not PHP Engine is active.\par
+%DESCRIPTION%
+Use this property to check if PHP engine active or not\par
+%READONLY%
+%PROPERTY%
+HandleErrors
+%SEE_ALSO%
+php4delphi.TPHPEngine.HTMLErrors
+%DELPHI_SYNTAX%
+\b\f4 property\b0  HandleErrors: boolean \b default\b0  true; \par
+%OVERVIEW%
+Indicates whether the component handles exceptions that are raised by the php script engine.\par
+%DESCRIPTION%
+When HandleErrors is True, exeptions are caught by the component.\par
+\par
+Setting HandleErrors to false will allow your php script to be executed in the manner that it would normally be if being executed as part of a web page, all errors that occur that are non fatal will print their error message in the body of the text returned by the execute method.  A fatal error will print out its error message in the returned text, and stop execution.\par
+\par
+If you set HandleErrors to true then any error (of any type) that occurs will raise an exception within your delphi application.  If you assign a handler to \cf13\protect OnScriptError\cf0\protect0\v php4delphi.TPHPEngine.OnScriptError\v0  you can take an action (such as log the error or notify the user) when these errors occur.  The \cf13\protect HTMLErrors\cf0\protect0\v php4delphi.TPHPEngine.HTMLErrors\v0  Property specifies whether you would like to recieve the error text with or without HTML formatting.  If a fatal error occurs execute will return an empty string.\par
+%PUBLISHED%
+%PROPERTY%
+HTMLErrors
+%SEE_ALSO%
+php4delphi.TPHPEngine.HandleErrors
+%DELPHI_SYNTAX%
+\b\f4 property\b0  HTMLErrors: boolean \b default\b0  false; \par
+%OVERVIEW%
+ Indicates whether the component displays an error message as HTML or plain text\par
+%DESCRIPTION%
+Use this property to set error output to HTML or plain text format\par
+%PUBLISHED%
+%PROPERTY%
+IniPath
+%DELPHI_SYNTAX%
+\b\f4 property\b0  IniPath: \b string\b0; \par
+%OVERVIEW%
+ Folder where PHP.INI file is located\par
+%DESCRIPTION%
+ Use IniPath property to specify where your PHP.INI file is located.\par
+Leave it empty to let PHP Engine use default PHP.INI file\par
+%PUBLISHED%
+%PROPERTY%
+MaxInputTime
+%DELPHI_SYNTAX%
+\b\f4 property\b0  MaxInputTime: integer \b default\b0  0; \par
+%OVERVIEW%
+Maximum amount of time each script may spend parsing request data\par
+%DESCRIPTION%
+Set MaxImputTime to 0 if you want to have no limits (specially when you are debugging your application and can stop at break-point).\par
+%PUBLISHED%
+%PROPERTY%
+RegisterGlobals
+%DELPHI_SYNTAX%
+\b\f4 property\b0  RegisterGlobals: boolean \b default\b0  true; \par
+%OVERVIEW%
+Allows PHP Engine to use global variables.\par
+%DESCRIPTION%
+Global variables are no longer registered for input data (POST, GET, cookies, environment and other server variables).  Instead of using $foo, you must use you can use $_REQUEST["foo"] (includes any variable that arrives through the request, namely, POST, GET and cookie variables), or use one of the specific\par
+$_GET["foo"], $_POST["foo"], $_COOKIE["foo"] or $_FILES["foo"], depending on where the input originates.  Also, you can look at the import_request_variables() function.\par
+Note that register_globals is going to be depracated (i.e., turned off by default) in the next version of PHP, because it often leads to security bugs.\par
+Read http://php.net/manual/en/security.registerglobals.php for further information.\par
+%PUBLISHED%
+%PROPERTY%
+ReportDLLError
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ReportDLLError: boolean; \par
+%OVERVIEW%
+Use this property to raise exception when php4ts.dll or php5ts.dll is not found by component\par
+%DESCRIPTION%
+When PHP Engine loads dynamically PHP DLL it will raise an exception if DLL is not found.\par
+Set ReportDLLError to false if you want to avoid it. In this case exception will be not triggered, but PHP Engine stays inactive.\par
+%PUBLISHED%
+%PROPERTY%
+RequestList
+%DELPHI_SYNTAX%
+\b\f4 property\b0  RequestList: TThreadList; \par
+%OVERVIEW%
+List of active TpsvPHP components\par
+%DESCRIPTION%
+RequestList is a list of TpsvPHP components that are running scripts or executing code at this moment\par
+When this list is empty, no TpsvPHP components are active\par
+%PROTECTED%
+%PROPERTY%
+SafeMode
+%SEE_ALSO%
+php4delphi.TPHPEngine.SafeModeGid
+%DELPHI_SYNTAX%
+\b\f4 property\b0  SafeMode: boolean \b default\b0  false; \par
+%OVERVIEW%
+ Indicates that PHP Engine is running in safe mode\par
+%DESCRIPTION%
+ Use SafeMode property to run PHP Engine in safe mode\par
+%PUBLISHED%
+%PROPERTY%
+SafeModeGid
+%SEE_ALSO%
+php4delphi.TPHPEngine.SafeMode
+%DELPHI_SYNTAX%
+\b\f4 property\b0  SafeModeGid: boolean \b default\b0  false; \par
+%OVERVIEW%
+ Safe mode GID\par
+%DESCRIPTION%
+ By default, Safe Mode does a UID compare check when opening files. If you want to relax this to a GID compare then turn on SafeModeGID\par
+See PHP documentation for more details about this property\par
+%PUBLISHED%
+%PROPERTY%
+WaitForShutdown
+%SEE_ALSO%
+php4delphi.TPHPEngine.ShutdownAndWaitFor
+php4delphi.TPHPEngine.ShutdownEngine
+%DELPHI_SYNTAX%
+\b\f4 property\b0  WaitForShutdown: boolean; \par
+%OVERVIEW%
+ Indicates that PHP Engine is waiting for shutdown \par
+%DESCRIPTION%
+ PHP Engine is wating for shutdown but still running. No new requests to run PHP scripts will be accepted, but existing requests continue execution.\par
+This is read-only propetry. Use \cf13\protect PrepareForShutdown\cf0\protect0\v php4delphi.TPHPEngine.PrepareForShutdown\v0  method to set WaitForShutdown to true. \par
+%READONLY%
+%COMPONENT%
+TPHPFunctions
+%OVERVIEW%
+ Collection of PHP functions\par
+%DESCRIPTION%
+ Each TPHPFunctions holds a group of TPHPFunction objects. TPHPFunctions maintains an index of the collection items in its Items array. The Count property contains the number of items in the collection. Use the Add and Clear methods to add items to the collection and delete items from the collection.\par
+%UNIT%
+phpFunctions
+%NAMESPACE%
+phpFunctions
+%DERIVED_FROM%
+TCollection
+%METHOD%
+Add
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Add: TPHPFunction; \par
+%OVERVIEW%
+Creates a new item instance and adds it to the Items array.\par
+%DESCRIPTION%
+ Call Add to create an item in the collection. The new item is placed at the end of the Items array.\par
+Add returns the new collection item.\par
+%METHOD%
+FunctionByName
+%DELPHI_SYNTAX%
+\b\f4 function\b0  FunctionByName(\b const\b0  AName: \b string\b0 ): TPHPFunction; \par
+%OVERVIEW%
+ Return PHP function bt given name\par
+%COMPONENT%
+TPHPHeader
+%OVERVIEW%
+ HTTP header\par
+%DESCRIPTION%
+ Represents HTTP header\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TCollectionItem
+%PROPERTY%
+Header
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Header: \b string\b0 ; \par
+%OVERVIEW%
+HTTP header content\par
+%DESCRIPTION%
+Use Header property to read HTTP header value\par
+%PUBLISHED%
+%COMPONENT%
+TPHPHeaders
+%OVERVIEW%
+Collection of HTTP headers\par
+%DESCRIPTION%
+Uses by TpsvPHP component to return a collection of HTTP headers after execution of the script\par
+Each TPHPHeaders holds a group of TPHPHeader objects. TPHPHeaders maintains an index of the collection items in its Items array. The Count property contains the number of items in the collection. Use the Add and Clear methods to add items to the collection and delete items from the collection.\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TCollection
+%METHOD%
+Add
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Add: TPHPHeader; \par
+%OVERVIEW%
+Creates a new item instance and adds it to the Items array.\par
+%DESCRIPTION%
+ Call Add to create an item in the collection. The new item is placed at the end of the Items array.\par
+Add returns the new collection item.\par
+%METHOD%
+GetHeaders
+%DELPHI_SYNTAX%
+\b\f4 function\b0  GetHeaders: \b string\b0; \par
+%PROPERTY%
+Items
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Items[\b Index\b0 : Integer]: TPHPHeader; \par
+%COMPONENT%
+TPHPLibrarian
+%OVERVIEW%
+List of available PHP libraries\par
+%DESCRIPTION%
+This class uses by PHP Engine to manage the list of known PHP libraries\par
+%UNIT%
+PHPCustomLibrary
+%NAMESPACE%
+PHPCustomLibrary
+%DERIVED_FROM%
+TObject
+%METHOD%
+AddLibrary
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  AddLibrary(ALibrary: TCustomPHPLibrary); \par
+%METHOD%
+Count
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Count: integer; \par
+%METHOD%
+GetLibrary
+%DELPHI_SYNTAX%
+\b\f4 function\b0  GetLibrary(\b Index\b0: integer): TCustomPHPLibrary; \par
+%METHOD%
+RemoveLibrary
+%DELPHI_SYNTAX%
+\f4\s2 \b procedure\b0  RemoveLibrary(ALibrary: TCustomPHPLibrary); \par
+%PROPERTY%
+Libraries
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  Libraries: TList; \par
+%COMPONENT%
+TPHPLibrary
+%OVERVIEW%
+Library of custom PHP functions\par
+%DESCRIPTION%
+ Use TPHPLibrary to add your custom functions to PHP script\par
+%UNIT%
+phpLibrary
+%NAMESPACE%
+phpLibrary
+%DERIVED_FROM%
+TCustomPHPLibrary
+%PROPERTY%
+Functions
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  Functions; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+LibraryName
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  LibraryName; \par
+%PUBLISHED%
+%INHERITED%
+%COMPONENT%
+TPHPSimpleLibrary
+%OVERVIEW%
+ Library of custom PHP functions\par
+%DESCRIPTION%
+Use TPHPSimpleLibrary  as a base class for your own PHP functions\par
+Check TPHPSystemLibrary how to implement your own PHP functions based on TPHPSimpleLibrary\par
+%UNIT%
+phpLibrary
+%NAMESPACE%
+phpLibrary
+%DERIVED_FROM%
+TCustomPHPLibrary
+%METHOD%
+RegisterMethod
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  RegisterMethod(AName: \b string\b0 ; ADescription: \b string\b0 ; AProc: TDispatchProc; AParams: \b array\b0  \b of\b0  TParamType); \b virtual\b0 ; \par
+%OVERVIEW%
+ Add new function to the libray\par
+%DESCRIPTION%
+Use RegisterMethod to make a link between custom php function defined in the library and php function name known by PHP Engine\par
+%DELPHI_EXAMPLE%
+\f4 RegisterMethod( 'sys_UpperCase', 'Returns a copy of a string in uppercase.', UpperCaseProc, [tpString] ) ;\f0\par
+%COMPONENT%
+TPHPSystemLibrary
+%OVERVIEW%
+Library of some predefined PHP functions available for PHP scripting\par
+%DESCRIPTION%
+TPHPSystemLibrary extends PHP scripting by adding additional PHP functions\par
+%UNIT%
+phpLibrary
+%NAMESPACE%
+phpLibrary
+%DERIVED_FROM%
+TPHPSimpleLibrary
+%COMPONENT%
+TPHPVariable
+%OVERVIEW%
+PHP script variable\par
+%DESCRIPTION%
+Use TPHPVariable to define PHP script variables and it initial values.\par
+All TPHPVariables are available in PHP script as PHP variables. You can provide initial values for these variables before scrip execution and read variables values back when script is executed\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TCollectionItem
+%PROPERTY%
+AsBoolean
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsBoolean: boolean; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a boolean value\par
+%PROPERTY%
+AsFloat
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsFloat: double; \par
+%OVERVIEW%
+ Specifies the value of the value when it represents a float value\par
+%PROPERTY%
+AsInteger
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsInteger: integer; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents an integer value\par
+%PROPERTY%
+AsString
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsString: \b string\b0 ; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a string\par
+%PROPERTY%
+Name
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Name: \b string\b0 ; \par
+%OVERVIEW%
+ Name of the variable\par
+%PUBLISHED%
+%PROPERTY%
+Value
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Value: \b string\b0 ; \par
+%OVERVIEW%
+ Value of the variable\par
+%PUBLISHED%
+%COMPONENT%
+TPHPVariables
+%OVERVIEW%
+ Collection of PHP variables\par
+%DESCRIPTION%
+Each TPHPVariables holds a group of TPHPVariable objects. TPHPVariables maintains an index of the collection items in its Items array. The Count property contains the number of items in the collection. Use the Add and Clear methods to add items to the collection and delete items from the collection.\par
+%UNIT%
+PHPCommon
+%NAMESPACE%
+PHPCommon
+%DERIVED_FROM%
+TCollection
+%METHOD%
+Add
+%DELPHI_SYNTAX%
+\b\f4 function\b0  Add: TPHPVariable; \par
+%OVERVIEW%
+Creates a new item instance and adds it to the Items array.\par
+%DESCRIPTION%
+ Call Add to create an item in the collection. The new item is placed at the end of the Items array.\par
+Add returns the new collection item.\par
+%METHOD%
+AddRawString
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  AddRawString(AString: \b string\b0 ); \par
+%METHOD%
+ByName
+%DELPHI_SYNTAX%
+\f4\s2 \b function\b0  ByName(AName: \b string\b0 ): TPHPVariable; \par
+%METHOD%
+Create
+%DELPHI_SYNTAX%
+\f4\s2 \b constructor\b0  Create(AOwner: TComponent); \par
+%METHOD%
+GetVariables
+%DELPHI_SYNTAX%
+\b\f4 function\b0  GetVariables: \b string\b0 ; \par
+%COMPONENT%
+TpsvCustomPHP
+%OVERVIEW%
+Base class for TpsvPHP component\par
+%DESCRIPTION%
+Use TpsvCustomPHP if you want to create your custom component for handling PHP scripts\par
+%UNIT%
+php4delphi
+%NAMESPACE%
+php4delphi
+%DERIVED_FROM%
+TPHPComponent
+%EVENT%
+OnReadPost
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnReadPost: TPHPReadPostEvent; \par
+%EVENT%
+OnReadResult
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnReadResult: TPHPReadResultEvent; \par
+%OVERVIEW%
+Occurs when ResultBuffer is ready for reading\par
+%DESCRIPTION%
+Use this event to read PHP script result from ResultBuffer instead of using result value of Execute or RunCode functions\par
+%EVENT%
+OnRequestShutdown
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnRequestShutdown: TNotifyEvent; \par
+%OVERVIEW%
+Occurs on request shutdown\par
+%DESCRIPTION%
+Use this event to perform specific action when PHP request is shutdown\par
+%EVENT%
+OnRequestStartup
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnRequestStartup: TNotifyEvent; \par
+%OVERVIEW%
+Occurs on request startup.\par
+%DESCRIPTION%
+Use this event to perform specific action when PHP request is starting up\par
+%METHOD%
+EngineActive
+%DELPHI_SYNTAX%
+\b\f4 function\b0  EngineActive: boolean; \par
+%OVERVIEW%
+ Indicates activity of PHP Engine\par
+%DESCRIPTION%
+ Use EngineActive method to determine activity of PHP engine\par
+%METHOD%
+Execute
+%DELPHI_SYNTAX%
+\b\f4 function\b0   Execute: \b string\b0; \b overload\b0 ;\line\b function\b0   Execute(AFileName: \b string\b0): \b string\b0; \b overload\b0 ;\par
+%OVERVIEW%
+ The Execute method will execute a PHP script. The function returns the output of the php script contained in the file AFilename as a string.\par
+%DESCRIPTION%
+ The second overloaded procedure can be used if you have not set the Filename property of the TpsvPHP Component, or if you wish to execute a seperate file\par
+The following are equivalent.\par
+\par
+\par
+\f4 psvPHP1.Filename := 'C:.php';\line\tab Result := psvPHP1.Execute;\line\f0 and\par
+\tab\f4 Result := psvPHP1.Execute('C:.php');\par
+%METHOD%
+RunCode
+%DELPHI_SYNTAX%
+\b\f4 function\b0   RunCode(ACode: \b string\b0): \b string\b0; \b overload\b0 ;\line\b function\b0   RunCode(ACode: TStrings): \b string\b0; \b overload\b0 ;\par
+%OVERVIEW%
+Use RunCode if you wish to execute some php code without first having to save it to a file.  As with Execute, RunCode returns the output of the php script that is executed.\par
+%DESCRIPTION%
+ You may either pass a string or any TStrings  descendant (such as TStringlist, TMemo.lines, TListbox.Items) to this function to run your code.\par
+\par
+Please note, it is not possible to execute a usual php/html page using RunCode, as it uses the eval function.  Basically this means that you cannot break out of a set of <?php ?> tags.  All code must be as though it was within one set of tags.  If you wish to do this, save your script to a file first and then execute it using Execute.\par
+\par
+\i Note: Ensure that you do not enclose your code in <?php ?> tags.\par
+%METHOD%
+VariableByName
+%DELPHI_SYNTAX%
+\b\f4 function\b0  VariableByName(AName: \b string\b0 ): TPHPVariable; \par
+%OVERVIEW%
+Returns \cf13\protect PHP variable\cf0\protect0\v PHPCommon.TPHPVariable\v0  by variable name\par
+%DESCRIPTION%
+This simply calls TPHPVariables.ByName\par
+%PROPERTY%
+AfterExecute
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AfterExecute: TNotifyEvent; \par
+%OVERVIEW%
+ Occurs after the psvPHP component has executed a script.\par
+%DESCRIPTION%
+ Use AfterExecute event to perform specific action after script executed\par
+%PROPERTY%
+BeforeExecute
+%DELPHI_SYNTAX%
+\b\f4 property\b0  BeforeExecute: TNotifyEvent; \par
+%OVERVIEW%
+ Occurs before the psvPHP Component executes a script.\par
+%DESCRIPTION%
+Use this event to perform a specific action before script execution\par
+%PROPERTY%
+ContentType
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ContentType: \b string\b0; \par
+%OVERVIEW%
+ POST content type\par
+%DESCRIPTION%
+By default content type for POST method is \b application/x-www-form-urlencoded\par
+\b0 Use this property is you want to specify another content type for POST method\par
+%PROPERTY%
+ExecuteMethod
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ExecuteMethod: TPHPExecuteMethod \b default\b0  emServer; \par
+%OVERVIEW%
+ For backward compatibility only\par
+%DESCRIPTION%
+ Determine how to read PHP variables values - from globals or from the _GET array\par
+%PROPERTY%
+FileName
+%DELPHI_SYNTAX%
+\b\f4 property\b0  FileName: \b string\b0; \par
+%OVERVIEW%
+PHP script name. \par
+%DESCRIPTION%
+Uses for executing PHP script from a file.  You can also just assign the Filename at the time you call the script using an overloaded version of \cf13\protect Execute\cf0\protect0\v php4delphi.TpsvCustomPHP.Execute\v0 .\par
+%PROPERTY%
+Headers
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Headers: TPHPHeaders; \par
+%OVERVIEW%
+Collection of HTTP headers\par
+%DESCRIPTION%
+Use Headers property to read HTTP headers returned by PHP script\par
+%PROPERTY%
+MaxExecutionTime
+%DELPHI_SYNTAX%
+\b\f4 property\b0  MaxExecutionTime: integer \b default\b0  0; \par
+%OVERVIEW%
+Maximum execution time of each script, in seconds\par
+%DESCRIPTION%
+Set this property to 0 to have no limit\par
+%PROPERTY%
+PostStream
+%DELPHI_SYNTAX%
+\b\f4 property\b0  PostStream: TMemoryStream; \par
+%OVERVIEW%
+Stream to hold POST data\par
+%DESCRIPTION%
+Use PostStream to provide POST content to PHP script. Use \cf13\protect OnReadPost\cf0\protect0\v php4delphi.TpsvCustomPHP.OnReadPost\v0  event to write to the PostStream\par
+%READONLY%
+%PROPERTY%
+RequestType
+%DELPHI_SYNTAX%
+\b\f4 property\b0  RequestType: TPHPRequestType \b default\b0  prtGet; \par
+%OVERVIEW%
+Request type. Can be POST or GET\par
+%DESCRIPTION%
+Type of HTTP request. Can be used to pass aditional content via PostStream or for server side usage.\par
+If you are using PHP components just to implement scripting in your application you can always use GET\par
+%PROPERTY%
+ResultBuffer
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ResultBuffer: TPHPMemoryStream; \par
+%OVERVIEW%
+Buffer that contains output of PHP script\par
+%DESCRIPTION%
+Execute method returns a string with result of PHP script output.\par
+If PHP produces binary data, image for example, you can read PHP output from ResultBuffer after script execution using OnReadResult event.\par
+In this case function returns an empty string as result.\par
+%READONLY%
+%PROPERTY%
+SessionActive
+%DELPHI_SYNTAX%
+\b\f4 property\b0  SessionActive: boolean; \par
+%OVERVIEW%
+ Indicates that PHP script is running\par
+%DESCRIPTION%
+Use SessionActive to determine activity of PHP scrit\par
+%READONLY%
+%PROPERTY%
+ThreadSafeResourceManager
+%DELPHI_SYNTAX%
+\b\f4 property\b0  ThreadSafeResourceManager: pointer; \par
+%OVERVIEW%
+ Returns a pointer to ZEND thread safe resources manager\par
+%DESCRIPTION%
+Use ThreadSafeResuorceManager to get a pointer to ZEND thread safe resources manager.\par
+Only for advanced programming\par
+%READONLY%
+%PROPERTY%
+UseDelimiters
+%DELPHI_SYNTAX%
+\b\f4 property\b0  UseDelimiters: boolean \b default\b0  true; \par
+%OVERVIEW%
+Use PHP script delimiters \b <? .. ?>\par
+%DESCRIPTION%
+When UseDelimiters is true component will add PHP script delimiters, if needed when RunCode method is called\par
+Otherwise developer should take care about it. \par
+%PROPERTY%
+VariableCount
+%DELPHI_SYNTAX%
+\b\f4 property\b0  VariableCount: integer; \par
+%OVERVIEW%
+ Indicates the number of PHP variables owned by the component.\par
+%DESCRIPTION%
+Use VariableCount to determine how many PHP variables are defined by component\par
+%READONLY%
+%PROPERTY%
+Variables
+%DELPHI_SYNTAX%
+\b\f4 property\b0  Variables: TPHPVariables; \par
+%OVERVIEW%
+Collection of the \cf13\protect PHP variables\cf0\protect0\v PHPCommon.TPHPVariables\v0 .\par
+%DESCRIPTION%
+This collection represents the values that would normally be in the QUERY_STRING (the information after the '?' in an URL).\par
+%PROPERTY%
+VirtualCode
+%DELPHI_SYNTAX%
+\b\f4 property\b0  VirtualCode: \b string\b0 ; \par
+%OVERVIEW%
+ Script code used by RunCode method\par
+%DESCRIPTION%
+ VirtualCode value is assigned by calling RunCode method. You don't have to do it manually\par
+%READONLY%
+%PROTECTED%
+%COMPONENT%
+TpsvPHP
+%OVERVIEW%
+Executes PHP scripts\par
+%DESCRIPTION%
+Use TpsvPHP component to execute PHP scripts. TpsvPHP needs TPHPEngine component present and active in order to execute scripts\par
+%UNIT%
+php4delphi
+%NAMESPACE%
+php4delphi
+%DERIVED_FROM%
+TpsvCustomPHP
+%EVENT%
+OnReadPost
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnReadPost; \par
+%PUBLISHED%
+%INHERITED%
+%EVENT%
+OnReadResult
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnReadResult; \par
+%PUBLISHED%
+%INHERITED%
+%EVENT%
+OnRequestShutdown
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnRequestShutdown; \par
+%PUBLISHED%
+%INHERITED%
+%EVENT%
+OnRequestStartup
+%DELPHI_SYNTAX%
+\b\f4 property\b0  OnRequestStartup; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+About
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  About; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+AfterExecute
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  AfterExecute; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+BeforeExecute
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  BeforeExecute; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+ContentType
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  ContentType; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+FileName
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  FileName; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+MaxExecutionTime
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  MaxExecutionTime; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+RequestType
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  RequestType; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+UseDelimiters
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  UseDelimiters; \par
+%PUBLISHED%
+%INHERITED%
+%PROPERTY%
+Variables
+%DELPHI_SYNTAX%
+\f4\s2 \b property\b0  Variables; \par
+%PUBLISHED%
+%INHERITED%
+%COMPONENT%
+TZendVariable
+%OVERVIEW%
+Represents ZEND variable - internal PHP structure to hold PHP script variable value at runtime\par
+%DESCRIPTION%
+Visit http://www.zend.com for more information about ZEND Engine\par
+%UNIT%
+phpFunctions
+%NAMESPACE%
+phpFunctions
+%DERIVED_FROM%
+TObject
+%METHOD%
+UnAssign
+%DELPHI_SYNTAX%
+\b\f4 procedure\b0  UnAssign; \par
+%OVERVIEW%
+Sets the value of the variable to NULL\par
+%DESCRIPTION%
+Use UnAssign method to set variable value to NULL\par
+%PROPERTY%
+AsBoolean
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsBoolean: boolean; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a boolean value\par
+%DESCRIPTION%
+AsBoolean provides a property to read the value of the variable\rquote s data into a Boolean, or to assign a Boolean value to the variable. \par
+%PROPERTY%
+AsDate
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsDate: TDateTime; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a date\par
+%DESCRIPTION%
+ AsDate provides a property to read the value of the variable's data into a Date, or to assign a Date value to the variable. \par
+%PROPERTY%
+AsDateTime
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsDateTime: TDateTime; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a date and a time\par
+%DESCRIPTION%
+ AsDateTime provides a property to read the value of the variable's data into a DateTime, or to assign a DateTime value to the variable. \par
+%PROPERTY%
+AsFloat
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsFloat: double; \par
+%OVERVIEW%
+ Specifies the value of the value when it represents a float value\par
+%DESCRIPTION%
+ AsFloat provides a property to read the value of the variable's data into a Float, or to assign a Float value to the variable. \par
+%PROPERTY%
+AsInteger
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsInteger: integer; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents an integer value\par
+%DESCRIPTION%
+ AsInteger provides a property to read the value of the variable's data into a Integer, or to assign a Integer value to the variable. \par
+%PROPERTY%
+AsString
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsString: \b string\b0 ; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a string\par
+%DESCRIPTION%
+ AsString provides a property to read the value of the variable's data into a String, or to assign a String value to the variable. \par
+%PROPERTY%
+AsTime
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsTime: TDateTime; \par
+%OVERVIEW%
+ Specifies the value of the variable when it represents a time\par
+%DESCRIPTION%
+ AsTime provides a property to read the value of the variable's data into a Time, or to assign a Time value to the variable. \par
+%PROPERTY%
+AsVariant
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsVariant: variant; \par
+%OVERVIEW%
+ Represents the value of the variable as a Variant.\par
+%DESCRIPTION%
+ AsVariant provides a property to read the value of the variable's data into a Variant, or to assign a Variant value to the variable. \par
+%PROPERTY%
+AsZendVariable
+%DELPHI_SYNTAX%
+\b\f4 property\b0  AsZendVariable: Pzval; \par
+%OVERVIEW%
+ Specifies the value of the variable in native ZEND format\par
+%DESCRIPTION%
+AsBoolean provides a property to read the value of the variable's data into a ZEND variable, or to assign a ZEND variable value to the variable. \par
+%PROPERTY%
+DataType
+%DELPHI_SYNTAX%
+\b\f4 property\b0  DataType: integer; \par
+%OVERVIEW%
+ Represents the internal ZEND type of the variable\par
+%DESCRIPTION%
+Returns one of the following\par
+  IS_NULL = 0;\par
+  IS_LONG = 1;\par
+  IS_DOUBLE = 2;\par
+  IS_BOOL = 3;\par
+  IS_ARRAY = 4;\par
+  IS_OBJECT = 5;\par
+  IS_STRING= 6;\par
+  IS_RESOURCE = 7;\par
+  IS_CONSTANT = 8;\par
+  IS_CONSTANT_ARRAY = 9;\par
+%READONLY%
+%PROPERTY%
+IsNull
+%DELPHI_SYNTAX%
+\b\f4 property\b0  IsNull: boolean; \par
+%OVERVIEW%
+ Indicates whether the value assigned to the variable is NULL (blank). Inspect IsNull to discover if the value of the variable is NULL\par
+%DESCRIPTION%
+Read-only property to check if ZEND variable has a value\par
+%READONLY%
+%PROPERTY%
+TypeName
+%DELPHI_SYNTAX%
+\b\f4 property\b0  TypeName: \b string\b0; \par
+%OVERVIEW%
+ Represents the name of the internal ZEND type of the variable\par
+%DESCRIPTION%
+Returns string representation of internal ZEND type\par
+For example if DataType = 1 \b IS_LONG \b0 will be returned\par
+%READONLY%
+%DELETED%
+.AssignTo
+.Create
+.Refresh
+EDelphiErrorEx
+EPHPErrorEx
+IPHPEngine
+IPHPRequest
+IPHPRequest.LibraryEntry
+TCustomPHPLibrary.Create
+TCustomPHPLibrary.Destroy
+TFunctionParam.Create
+TFunctionParam.Destroy
+TFunctionParam.GetDisplayName
+TFunctionParam.SetDisplayName
+TFunctionParams.Create
+TPHPConstants.Create
+TPHPEngine.Create
+TPHPEngine.Destroy
+TPHPFunctions.Create
+TPHPHeaders.Create
+TPHPLibrarian.Create
+TPHPLibrarian.Destroy
+TPHPSimpleLibrary.Destroy
+TPHPSystemLibrary.IndexOf
+TPHPVariables.Items
+TpsvCustomPHP.Create
+TpsvCustomPHP.Destroy
+%CONTENTS%
+0,TPHPSystemLibrary	TPHPSystemLibrary
+0,TPHPSimpleLibrary	TPHPSimpleLibrary
+0,TDispatchObject	TDispatchObject
+0,TPHPLibrary	TPHPLibrary
+0,TpsvPHP	TpsvPHP
+0,TpsvCustomPHP	TpsvCustomPHP
+0,TPHPEngine	TPHPEngine
+0,TPHPLibrarian	TPHPLibrarian
+0,TCustomPHPLibrary	TCustomPHPLibrary
+0,TZendVariable	TZendVariable
+0,TFunctionParam	TFunctionParam
+0,TFunctionParams	TFunctionParams
+0,TPHPFunctions	TPHPFunctions
+0,TPHPVariable	TPHPVariable
+0,TPHPVariables	TPHPVariables
+0,TPHPConstant	TPHPConstant
+0,TPHPConstants	TPHPConstants
+0,TPHPHeader	TPHPHeader
+0,TPHPHeaders	TPHPHeaders
+0,TPHPComponent	TPHPComponent
+0,Types

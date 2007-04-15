@@ -243,7 +243,6 @@ const
 
 var
   delphi_sapi_module : sapi_module_struct;
-  php_delphi_module  : Tzend_module_entry;
 
 {$IFDEF REGISTER_COLORS}
 const
@@ -332,7 +331,10 @@ begin
    end;
 end;
 
-procedure php_info_delphi(zend_module : Pointer; TSRMLS_DC : pointer); cdecl;
+
+procedure php_info_library(zend_module : Pointer; TSRMLS_DC : pointer); cdecl;
+var
+ cnt : integer;
 begin
   php_info_print_table_start();
   php_info_print_table_row(2, PChar('SAPI module version'), PChar('PHP4Delphi 7.0 Apr 2007'));
@@ -354,14 +356,6 @@ begin
   php_info_print_table_row(2, 'delphi_input_box', 'Displays an input dialog box that enables the user to enter a string.');
   php_info_print_table_row(2, 'register_delphi_component', 'Register Delphi component as PHP class');
 
-  php_info_print_table_end();
-end;
-
-procedure php_info_library(zend_module : Pointer; TSRMLS_DC : pointer); cdecl;
-var
- cnt : integer;
-begin
-  php_info_print_table_start();
   if Assigned(PHPEngine) then
    begin
      for cnt := 0 to PHPEngine.FHash.Count - 1 do
@@ -374,12 +368,12 @@ end;
 
 function php_delphi_startup(sapi_module : Psapi_module_struct) : integer; cdecl;
 begin
-  result := php_module_startup(sapi_module, nil, 0);
+  Result := SUCCESS;
 end;
 
 function php_delphi_deactivate(p : pointer) : integer; cdecl;
 begin
-  result := 0;
+  result := SUCCESS;
 end;
 
 
@@ -428,10 +422,10 @@ begin
   php_register_variable('PHP_SELF', '_', nil, p);
   php_register_variable('SERVER_NAME','DELPHI', val, p);
   php_register_variable('SERVER_SOFTWARE', 'Delphi', val, p);
-//  if php.RequestType = prtPost then
-//   php_register_variable('REQUEST_METHOD', 'POST', val, p)
-//     else
-//       php_register_variable('REQUEST_METHOD', 'GET', val, p);
+  if php.RequestType = prtPost then
+   php_register_variable('REQUEST_METHOD', 'POST', val, p)
+     else
+       php_register_variable('REQUEST_METHOD', 'GET', val, p);
 
   varcnt := PHP.Variables.Count;
   if varcnt > 0 then
@@ -1355,33 +1349,6 @@ begin
   delphi_sapi_module.executable_location := nil;
   delphi_sapi_module.php_ini_ignore := 0;
 
-  InitDelphiFunctions;
-  php_delphi_module.size := sizeOf(Tzend_module_entry);
-  php_delphi_module.zend_api := ZEND_MODULE_API_NO;
-  php_delphi_module.zend_debug := 0;
-  php_delphi_module.zts := USING_ZTS;
-  php_delphi_module.name := 'php4delphi_support';
-  php_delphi_module.functions := @DelphiTable[0];
-  php_delphi_module.module_startup_func := @minit;
-  php_delphi_module.module_shutdown_func := @mshutdown;
-  php_delphi_module.info_func := @php_info_delphi;
-  php_delphi_module.version := '7.0';
-  {$IFDEF PHP4}
-  php_delphi_module.global_startup_func := nil;
-  {$ENDIF}
-  php_delphi_module.request_startup_func := @rinit;
-  php_delphi_module.request_shutdown_func := @rshutdown;
-
-  {$IFDEF PHP5}
-  {$IFNDEF PHP520}
-  php_delphi_module.global_id := 0;
-  {$ENDIF}
-  {$ENDIF}
-  php_delphi_module.module_started := 0;
-  php_delphi_module._type := MODULE_PERSISTENT;
-  php_delphi_module.handle := nil;
-  php_delphi_module.module_number := 0;
-
   FLibraryModule.size := sizeOf(Tzend_module_entry);
   FLibraryModule.zend_api := ZEND_MODULE_API_NO;
   FLibraryModule.zend_debug := 0;
@@ -1395,7 +1362,8 @@ begin
   {$IFDEF PHP4}
   FLibraryModule.global_startup_func := nil;
   {$ENDIF}
-  FLibraryModule.request_shutdown_func := nil;
+  FLibraryModule.request_shutdown_func := @rshutdown;
+  FLibraryModule.request_startup_func := @rinit;
   {$IFDEF PHP5}
   {$IFNDEF PHP520}
   FLibraryModule.global_id := 0;
@@ -1497,19 +1465,72 @@ procedure TPHPEngine.RefreshLibrary;
 var
  cnt : integer;
 begin
-  SetLength(FLibraryEntryTable, FHash.Count + 1);
+  SetLength(FLibraryEntryTable, FHash.Count + 13);
+
+  PHP_FUNCTION(FLibraryEntryTable[0], 'delphi_date', @delphi_date);
+  PHP_FUNCTION(FLibraryEntryTable[1], 'delphi_extract_file_dir', @delphi_extract_file_dir);
+  PHP_FUNCTION(FLibraryEntryTable[2], 'delphi_extract_file_drive', @delphi_extract_file_drive);
+  PHP_FUNCTION(FLibraryEntryTable[3], 'delphi_extract_file_name', @delphi_extract_file_name);
+
+  FLibraryEntryTable[4].fname := 'delphi_extract_file_ext';
+  FLibraryEntryTable[4].handler := @delphi_extract_file_ext;
+  {$IFDEF PHP4}
+  FLibraryEntryTable[4].func_arg_types := nil;
+  {$ELSE}
+  FLibraryEntryTable[4].arg_info := nil;
+  {$ENDIF}
+
+  FLibraryEntryTable[5].fname := 'delphi_show_message';
+  FLibraryEntryTable[5].handler := @delphi_show_message;
+  {$IFDEF PHP4}
+  FLibraryEntryTable[5].func_arg_types := nil;
+  {$ELSE}
+  FLibraryEntryTable[5].arg_info := nil;
+  {$ENDIF}
+
+  FLibraryEntryTable[6].fname :=  'register_delphi_object';
+  FLibraryEntryTable[6].handler := @register_delphi_object;
+  {$IFDEF PHP4}
+  FLibraryEntryTable[6].func_arg_types := nil;
+  {$ELSE}
+  FLibraryEntryTable[6].arg_info := nil;
+  {$ENDIF}
+
+  FLibraryEntryTable[7].fname := 'delphi_get_author';
+  FLibraryEntryTable[7].handler := @delphi_get_author;
+  {$IFDEF PHP4}
+  FLibraryEntryTable[7].func_arg_types := nil;
+  {$ELSE}
+  FLibraryEntryTable[7].arg_info := nil;
+  {$ENDIF}
+
+  FLibraryEntryTable[8].fname := 'delphi_str_date';
+  FLibraryEntryTable[8].handler := @delphi_str_date;
+  {$IFDEF PHP4}
+  FLibraryEntryTable[8].func_arg_types := nil;
+  {$ELSE}
+  FLibraryEntryTable[8].arg_info := nil;
+  {$ENDIF}
+
+
+  PHP_FUNCTION(FLibraryEntryTable[9], 'delphi_get_system_directory', @delphi_get_system_directory);
+  PHP_FUNCTION(FLibraryEntryTable[10], 'delphi_input_box', @delphi_input_box);
+  PHP_FUNCTION(FLibraryEntryTable[11], 'register_delphi_component', @register_delphi_component);
+  
+
     for cnt := 0 to FHash.Count - 1 do
     begin
-      FLibraryEntryTable[cnt].fname := PChar(FHash[cnt]);
-      FLibraryEntryTable[cnt].handler := @DispatchRequest;
+      FLibraryEntryTable[cnt+12].fname := PChar(FHash[cnt]);
+      FLibraryEntryTable[cnt+12].handler := @DispatchRequest;
       {$IFDEF PHP4}
-      FLibraryEntryTable[cnt].func_arg_types := nil;
+      FLibraryEntryTable[cnt+12].func_arg_types := nil;
       {$ENDIF}
     end;
-    FLibraryEntryTable[FHash.Count].fname := nil;
-    FLibraryEntryTable[FHash.Count].handler := nil;
+
+    FLibraryEntryTable[FHash.Count+12].fname := nil;
+    FLibraryEntryTable[FHash.Count+12].handler := nil;
     {$IFDEF PHP4}
-    FLibraryEntryTable[FHash.Count].func_arg_types := nil;
+    FLibraryEntryTable[FHash.Count+12].func_arg_types := nil;
     {$ENDIF}
 
     FLibraryModule.functions :=  @FLibraryEntryTable[0];
@@ -1518,7 +1539,6 @@ end;
 procedure TPHPEngine.StartupEngine;
 var
  i : integer;
- p : pointer;
 begin
   if PHPEngine <> Self then
    begin
@@ -1539,35 +1559,24 @@ begin
        end;
 
      try
-      //Start PHP thread safe resource manager
-      tsrm_startup(128, 1, TSRM_ERROR_LEVEL_CORE , 'TSRM.LOG');
-
-      sapi_startup(@delphi_sapi_module);
-      p := @php_delphi_module;
-      php_module_startup(@delphi_sapi_module, p, 1);
-      TSRMLS_D := ts_resource_ex(0, nil);
-
-      PrepareIniEntry;
-      RegisterConstants;
-
       FHash.Clear;
       for i := 0 to Librarian.Count -1 do
       begin
         RegisterLibrary(Librarian.GetLibrary(I));
       end;
 
+      //Start PHP thread safe resource manager
+      tsrm_startup(128, 1, TSRM_ERROR_LEVEL_CORE , 'TSRM.LOG');
 
-      //only register library if at least 1 function present
-      if FHash.Count > 0 then
-       begin
-          RefreshLibrary;
-          p := @FLibraryModule;
-          {$IFDEF PHP510}
-          php_register_extensions(@p, 1, TSRMLS_D);
-          {$ELSE}
-          php_startup_extensions(@p, 1);
-          {$ENDIF}
-       end;
+      sapi_startup(@delphi_sapi_module);
+
+      RefreshLibrary;
+      php_module_startup(@delphi_sapi_module, @FLibraryModule, 1);
+      TSRMLS_D := ts_resource_ex(0, nil);
+
+      PrepareIniEntry;
+      RegisterConstants;
+
 
       if Assigned(FOnEngineStartup) then
        FOnEngineStartup(Self);
