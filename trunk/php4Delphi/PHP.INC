@@ -18,7 +18,6 @@ If you are using PHP version 5.1.0 or higher please add $DEFINE PHP510
 If you are using PHP version 5.1.1 or higher please add $DEFINE PHP511
 If you are using PHP version 5.1.2 or higher please add $DEFINE PHP512
 If you are using PHP version 5.2.0 or higher please add $DEFINE PHP520
-if you are using PHP version 5.2.1 or highre please add $DEFINE PHP521
 
 Sorry for such complicated configuration, but PHP team does not keep
 backward compatibility between PHP versions.
