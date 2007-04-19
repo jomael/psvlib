@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: PHPLibrary.pas,v 7.0 02/2006 delphi32 Exp $ }
+{ $Id: PHPLibrary.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit phpLibrary;
 
@@ -101,6 +101,7 @@ type
      procedure BeepProc;
      procedure RandomProc;
     public
+     constructor Create(AOwner : TComponent); override;
      procedure Refresh; override;
     end;
 
@@ -232,7 +233,6 @@ constructor TPHPSimpleLibrary.Create(AOwner: TComponent);
 begin
   inherited;
   FMethods := TStringList.Create;
-  LibraryName := 'delphi_system';
 end;
 
 destructor TPHPSimpleLibrary.Destroy;
@@ -494,5 +494,11 @@ begin
   ReturnOutputArg( Random );
 end;
 
+
+constructor TPHPSystemLibrary.Create(AOwner: TComponent);
+begin
+  inherited;
+  LibraryName := 'delphi_system';
+end;
 
 end.

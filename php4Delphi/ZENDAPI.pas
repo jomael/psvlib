@@ -18,6 +18,21 @@ interface
 uses
   Windows, SysUtils, ZendTypes;
 
+const
+{$IFDEF PHP_DEBUG}
+ {$IFDEF PHP5}
+  PHPWin = 'php5ts_debug.dll';
+  {$ELSE}
+  PHPWin = 'php4ts_debug.dll';
+  {$ENDIF}
+{$ELSE}
+ {$IFDEF PHP5}
+  PHPWin = 'php5ts.dll';
+  {$ELSE}
+  PHPWin = 'php4ts.dll';
+  {$ENDIF}
+{$ENDIF}
+
 type
   EPHP4DelphiException = class(Exception)
    constructor Create(const Msg: string);
@@ -33,11 +48,7 @@ type
 const
   PLATFORM_ALIGNMENT = (SizeOf(align_test));
 
-{$IFDEF PHP5}
-function  LoadZEND(const DllFilename: string = 'php5ts.dll') : boolean;
-{$ELSE}
-function  LoadZEND(const DllFilename: string = 'php4ts.dll') : boolean;
-{$ENDIF}
+function  LoadZEND(const DllFilename: string = PHPWin) : boolean;
 
 procedure UnloadZEND;
 function  ZENDLoaded: boolean;
@@ -630,13 +641,15 @@ var
   zend_objects_new : function (_object : pointer; class_type : pointer; TSRMLS_DC : pointer) : _zend_object_value; cdecl;
 {$ENDIF}  
 
+const
+  MSCRT = 'msvcrt.dll';
 
 //Microsoft C++ functions
-function setjmp(buf : jump_buf) : integer; cdecl; external 'msvcrt.dll' name '_setjmp3';
-function pipe(phandles : pointer; psize : uint; textmode : integer) : integer; cdecl; external 'msvcrt.dll' name '_pipe';
-procedure close(AHandle : THandle); cdecl; external 'msvcrt.dll' name '_close';
-function _write(AHandle : integer; ABuffer : pointer; count : uint) : integer; cdecl; external 'msvcrt.dll' name '_write';
-function strdup(strSource : PChar) : PChar; cdecl; external 'msvcrt.dll' name '_strdup';
+function setjmp(buf : jump_buf) : integer; cdecl; external  MSCRT name '_setjmp3';
+function pipe(phandles : pointer; psize : uint; textmode : integer) : integer; cdecl; external MSCRT name '_pipe';
+procedure close(AHandle : THandle); cdecl; external MSCRT name '_close';
+function _write(AHandle : integer; ABuffer : pointer; count : uint) : integer; cdecl; external MSCRT name '_write';
+function strdup(strSource : PChar) : PChar; cdecl; external MSCRT name '_strdup';
 
 
 function ZEND_FAST_ALLOC: pzval;
@@ -654,11 +667,11 @@ var
 var
  zend_ini_deactivate : function(TSRMLS_D : pointer) : integer; cdecl;
 
-function GetGlobalResource(resource_name: string; TSRMLS_DC : pointer) : pointer;
+function GetGlobalResource(resource_name: string) : pointer;
 
-function GetCompilerGlobals(TSRMLS_DC : pointer) : Pzend_compiler_globals;
-function GetExecutorGlobals(TSRMLS_DC : pointer) : pzend_executor_globals;
-function GetAllocGlobals(TSRMLS_DC : pointer) : pointer;
+function GetCompilerGlobals : Pzend_compiler_globals;
+function GetExecutorGlobals : pzend_executor_globals;
+function GetAllocGlobals : pointer;
 
 function zend_register_functions(functions : pzend_function_entry;  function_table : PHashTable; _type: integer;  TSRMLS_DC : pointer) : integer;
 function zend_unregister_functions(functions : pzend_function_entry; count : integer; function_table : PHashTable; TSRMLS_DC : pointer) : integer;
@@ -858,7 +871,7 @@ begin
 end;
 
 
-function LoadZEND(const DllFilename: string) : boolean;
+function LoadZEND(const DllFilename: string = PHPWin) : boolean;
 var
   WriteFuncPtr  : pointer;
 begin
@@ -1961,7 +1974,7 @@ begin
   target_function_table  := function_table;
 
   if (target_function_table = nil) then
-    target_function_table :=  GetCompilerGlobals(TSRMLS_DC).function_table;
+    target_function_table :=  GetCompilerGlobals.function_table;
 
 
   internal_function._type := ZEND_INTERNAL_FUNCTION;
@@ -2005,16 +2018,18 @@ end;
 
 
 
-function GetGlobalResource(resource_name: string; TSRMLS_DC : pointer) : pointer;
+function GetGlobalResource(resource_name: string) : pointer;
 var
  global_id : pointer;
  global_value : integer;
  global_ptr   : pointer;
+ tsrmls_dc : pointer;
 begin
   Result := nil;
   global_id := GetProcAddress(PHPLib, PChar(resource_name));
   if Assigned(global_id) then
    begin
+     tsrmls_dc := tsrmls_fetch;
      global_value := integer(global_id^);
      asm
        mov ecx, global_value
@@ -2028,19 +2043,19 @@ begin
 end;
 
 
-function GetCompilerGlobals(TSRMLS_DC : pointer) : Pzend_compiler_globals;
+function GetCompilerGlobals : Pzend_compiler_globals;
 begin
-  result := GetGlobalResource('compiler_globals_id', TSRMLS_DC);
+  result := GetGlobalResource('compiler_globals_id');
 end;
 
-function GetExecutorGlobals(TSRMLS_DC : pointer) : pzend_executor_globals;
+function GetExecutorGlobals : pzend_executor_globals;
 begin
-  result := GetGlobalResource('executor_globals_id', TSRMLS_DC);
+  result := GetGlobalResource('executor_globals_id');
 end;
 
-function GetAllocGlobals(TSRMLS_DC : pointer) : pointer;
+function GetAllocGlobals : pointer;
 begin
-  result := GetGlobalResource('alloc_globals_id', TSRMLS_DC);
+  result := GetGlobalResource('alloc_globals_id');
 end;
 
 {$IFDEF PHP5}

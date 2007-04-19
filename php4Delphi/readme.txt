@@ -3,22 +3,17 @@ PHP - Delphi interface and PHP extensions development framework
 
 { $Id: readme.txt,v 7.0 04/2007 delphi32 Exp $ } 
 
-PHP4Delphi is a Delphi interface to PHP for Delphi 5, 6, 7, Delphi 2005 and Delphi 2006.
+PHP4Delphi is a Delphi interface to PHP for Delphi 5, 6, 7, Delphi 2005, Delphi 2006 and Delphi 2007.
 
 PHP4Delphi consists of 3 big subprojects:
 
 1. PHP scripting (using php as a scripting language in Delphi applications)
 PHP4Delphi allows to execute the PHP scripts within the Delphi program using 
-TpsvPHP component directly without a WebServer. TpsvPHP is not a component for  
-server-side development. It is a scripting for applications (like VBA for Office). 
+TpsvPHP component directly without a WebServer. 
 It is a PHP extension that enables you to write client-side GUI applications. 
 One of the goals behind it was to prove that PHP is a capable general-purpose scripting 
-language that is suited for more than just Web applications. It is intended for 
-creating standalone GUI applications. If you want to use PHP within your application 
-you can use Indy idHTTPServer component and idISAPIRunner + PHP4ISAPI or 
-idCGIRunner + php.exe. You will have exactly the same results as using IIS or Apache. 
-With php4Delphi you can use delphi forms instead of web-forms, pass parameters to 
-script directly, without using GET and POST methods.
+language that is suited for more than just Web applications. 
+It is used by "Delphi for PHP" from CodeGear.
 
 2. PHP extensions development framework (using Delphi to extend PHP functionality)
 Visual Development Framework gives possibility to create custom PHP
@@ -34,17 +29,14 @@ More detail information available in php4Delphi manual php4Delphi.pdf
 
 
 This is a source-only release of php4Delphi. It includes
-designtime and runtime packages for Delphi 5 through Delphi 2006.
+designtime and runtime packages for Delphi 5 through Delphi 2007.
 
-Warning:
-
-PHP 4.3.5 gives some memory management troubles with php4delphi 
-This problem is fixed in PHP 4.3.6                        
 
 History:
 
-7.0
+7.0 Apr 2007
 
+* Compatible with Delphi 2007
 * Compatible with PHP 5.2.1
 * Compatible with PHP 4.4.6
 * Thread safe TpsvPHP component
@@ -52,7 +44,7 @@ History:
 * RunCode method reimplemented to solve "black horror" of pipes.
 
 
-6.2
+6.2 Feb 2006
 
 * Compatible with PHP 5.2.0
 * Compatible with Delphi 2006
@@ -356,6 +348,44 @@ Use "File\Open..." menu item to open design-time package php4DelphiD2006.dpk
 In "Package..." window click "Compile" button to compile the package
 and then click "Install" button to register php4Delphi Library 
 components on the component palette. 
+
+
+6. Delphi 2007:
+
+Uninstall previous installed version of php4Delphi Library from Delphi 2007 IDE.
+Remove previously compiled php4Delphi packages from your hard disk.
+
+Select PHP version you are going to use. php4Delphi supports PHP 4.x and PHP 5.x, 
+but not at the same time. You have to compile php4Delphi for selected target version of PHP.
+
+Open PHP.INC file.
+If you are using PHP5:
+a) Comment (remove) PHP4 directive  {$DEFINE PHP4}
+b) Uncomment (remove dot) directive {$DEFINE PHP5}
+c) Save PHP.INC file
+
+If you are using PHP4:
+a) Comment (remove) PHP5 directive {$DEFINE PHP5}
+b) Uncomment (remove dot) directive {$DEFINE PHP4}
+c) If you are using PHP version 4.2.x...4.3.0 add {$DEFINE PHP430} and remove {$DEFINE PHP433}
+   If you are using PHP version 4.3.3...4.3.x add {$DEFINE PHP433} and remove {$DEFINE PHP430}
+d) Save PHP.INC file
+
+Use "File\Open..." menu item of Delphi IDE to open php4Delphi runtime
+package php4DelphiR2007.dpk. In "Package..." window click "Compile" button to
+compile packages php4DelphiR2007.dpk. 
+Put compiled BPL file into directory that is accessible through the search PATH (i.e. DOS
+"PATH" environment variable; 
+for example, in the Windows\System directory).
+
+After compiling php4Delphi run-time package you must install design-time
+package into the IDE.
+
+Use "File\Open..." menu item to open design-time package php4DelphiD2007.dpk
+In "Package..." window click "Compile" button to compile the package
+and then click "Install" button to register php4Delphi Library 
+components on the component palette. 
+
 
 Since this is a freeware you are strongly encouraged to look 
 at the source code and improve on the components if you want to. 
