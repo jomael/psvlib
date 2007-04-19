@@ -60,6 +60,10 @@ procedure Register;
 
 implementation
 
+{$IFDEF VERSION11}
+{$R php4delphi.dcr}
+{$ENDIF}
+
 procedure Register;
 begin
   RegisterComponents('PHP', [TPHPEngine]);

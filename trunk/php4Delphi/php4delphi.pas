@@ -72,7 +72,6 @@ type
     FConstants : TphpConstants;
     FDLLFolder : string;
     FReportDLLError : boolean;
-    FRequestList : TThreadList;
     FLock: TRTLCriticalSection;
     FOnScriptError : TPHPErrorEvent;
     FOnLogMessage : TPHPLogMessage;
@@ -80,6 +79,7 @@ type
     FHash : TStringList;
     FLibraryModule : Tzend_module_entry;
     FLibraryEntryTable : array  of zend_function_entry;
+    FRequestCount : integer;
     procedure SetConstants(Value : TPHPConstants);
     function GetConstantCount: integer;
     function GetEngineActive : boolean;
@@ -92,12 +92,14 @@ type
     procedure RegisterInternalConstants(TSRMLS_DC : pointer); virtual;
     procedure HandleRequest(ht : integer; return_value : pzval; return_value_ptr : ppzval; this_ptr : pzval;
       return_value_used : integer; TSRMLS_DC : pointer); virtual;
-    property RequestList : TThreadList read FRequestList write FRequestList;
+    property  RequestCount : integer read FRequestCount;
     procedure HandleError (Sender : TObject; AText : string; AType : TPHPErrorType; AFileName : string; ALineNo : integer);
     procedure HandleLogMessage(Sender : TObject; AText : string);
     procedure RegisterLibrary(ALib : TCustomPHPLibrary);
     procedure RefreshLibrary;
     procedure UnlockLibraries;
+    procedure RemoveRequest;
+    procedure AddRequest;
   public
     constructor Create(AOwner : TComponent); override;
     destructor Destroy; override;
@@ -162,13 +164,13 @@ type
     procedure SetHeaders(Value : TPHPHeaders);
     function GetVariableCount: integer;
   protected
-    TSRMLS_D  : pointer;
+    TSRMLS_D : pointer;
     procedure ClearBuffer;
     procedure ClearHeaders;
     procedure StartupRequest; virtual;
     procedure ShutdownRequest; virtual;
-    procedure PrepareResult(TSRMLS_D : pointer); virtual;
-    procedure PrepareVariables(TSRMLS_D : pointer); virtual;
+    procedure PrepareResult; virtual;
+    procedure PrepareVariables; virtual;
     function RunTime : boolean;
     function GetThreadSafeResourceManager : pointer;
     function  CreateVirtualFile(ACode : string) : boolean;
@@ -234,12 +236,6 @@ implementation
 uses
   PHPFunctions;
 
-const
- {$IFDEF PHP5}
-  PHPWin = 'php5ts.dll';
-  {$ELSE}
-  PHPWin = 'php4ts.dll';
-  {$ENDIF}
 
 var
   delphi_sapi_module : sapi_module_struct;
@@ -302,7 +298,6 @@ procedure DispatchRequest(ht : integer; return_value : pzval; this_ptr : pzval;
 var
  php : TComponent;
  gl : psapi_globals_struct;
- p : pointer;
  Lib : IPHPEngine;
  Req : IPHPRequest;
 {$IFNDEF PHP510}
@@ -313,8 +308,7 @@ begin
   return_value_ptr := nil;
   {$ENDIF}
   ZVAL_NULL(return_value);
-  p := ts_resource_ex(0, nil);
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   php := TComponent(gl^.server_context);
   if Assigned(php) then
    begin
@@ -387,7 +381,7 @@ var
  gl : psapi_globals_struct;
 begin
   Result := 0;
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   if Assigned(gl) then
    begin
      php := TpsvPHP(gl^.server_context);
@@ -406,12 +400,10 @@ procedure php_delphi_register_variables(val : pzval; p : pointer); cdecl;
 var
  php : TpsvPHP;
  gl : psapi_globals_struct;
- ts : pointer;
  cnt : integer;
  varcnt : integer;
 begin
-  ts := tsrmls_fetch;
-  gl := GetSAPIGlobals(ts);
+  gl := GetSAPIGlobals;
   php := TpsvPHP(gl^.server_context);
 
   if PHP = nil then
@@ -438,14 +430,12 @@ begin
    end;
 end;
 
-function php_delphi_read_post(buf : PChar; len : uint; p : pointer) : integer; cdecl;
+function php_delphi_read_post(buf : PChar; len : uint; TSRMLS_DC : pointer) : integer; cdecl;
 var
  gl : psapi_globals_struct;
  php : TpsvPHP;
 begin
-  gl := GetSAPIGlobals(p);
-
-
+  gl := GetSAPIGlobals;
   php := TpsvPHP(gl^.server_context);
 
   if PHP = nil then
@@ -473,10 +463,8 @@ function php_delphi_log_message(msg : Pchar) : integer; cdecl;
 var
  php : TpsvPHP;
  gl : psapi_globals_struct;
- p : pointer;
 begin
-  p := ts_resource_ex(0, nil);
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   php := TpsvPHP(gl^.server_context);
   if Assigned(PHPEngine) then
    begin
@@ -494,10 +482,8 @@ function php_delphi_send_header(p1, TSRMLS_DC : pointer) : integer; cdecl;
 var
  php : TpsvPHP;
  gl  : psapi_globals_struct;
- p : pointer;
 begin
-  p := ts_resource_ex(0, nil);
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   php := TpsvPHP(gl^.server_context);
   if Assigned(p1) and Assigned(php) then
    begin
@@ -533,7 +519,7 @@ begin
   wvsprintf(buffer, _format, args);
   err_msg := buffer;
   p := ts_resource_ex(0, nil);
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   php := TpsvPHP(gl^.server_context);
 
   case _type of
@@ -768,7 +754,7 @@ begin
       Exit;
     end;
 
-  PHPEngine.RequestList.Add(Self);
+  PHPEngine.AddRequest;
 
   try
     ClearHeaders;
@@ -794,7 +780,6 @@ begin
     if FUseMapping then
      begin
        {$IFDEF PHP5}
-
        ZendStream.reader := delphi_stream_reader;
        ZendStream.closer := delphi_stream_closer;
        {$IFDEF PHP510}
@@ -832,7 +817,7 @@ begin
       FBuffer.Clear;
     end;
 
-    PrepareResult(TSRMLS_D);
+    PrepareResult;
 
 
     if Assigned(FAfterExecute) then
@@ -856,7 +841,7 @@ begin
     FVirtualCode := '';
     {$ENDIF}
   finally
-    PHPEngine.RequestList.Remove(Self);
+    PHPEngine.RemoveRequest;
   end;
 end;
 
@@ -915,7 +900,7 @@ begin
   Result := Execute;
 end;
 
-procedure TpsvCustomPHP.PrepareResult(TSRMLS_D : pointer);
+procedure TpsvCustomPHP.PrepareResult;
 var
   ht  : PHashTable;
   data: ^ppzval;
@@ -927,12 +912,12 @@ begin
    
   if FExecuteMethod = emServer then
   {$IFDEF PHP4}
-   ht := GetSymbolsTable(TSRMLS_D)
+   ht := GetSymbolsTable
   {$ELSE}
-   ht := @GetExecutorGlobals(TSRMLS_D).symbol_table
-  {$ENDIF} 
+   ht := @GetExecutorGlobals.symbol_table
+  {$ENDIF}
     else
-     ht := GetTrackHash('_GET', TSRMLS_D);
+     ht := GetTrackHash('_GET');
   if Assigned(ht) then
    begin
      for cnt := 0 to FVariables.Count - 1  do
@@ -958,7 +943,9 @@ begin
   Result := FVariables.ByName(AName);
 end;
 
-
+/// <summary>
+/// Indicates activity of PHP Engine
+/// </summary>
 function TpsvCustomPHP.EngineActive : boolean;
 begin
   if Assigned(PHPEngine) then
@@ -993,7 +980,7 @@ begin
 
     FPostStream.Position := 0;
 
-    gl := GetSAPIGlobals(TSRMLS_D);
+    gl := GetSAPIGlobals;
     gl^.server_context := Self;
     gl^.request_info.query_string := PChar(Variables.GetVariables);
     gl^.sapi_headers.http_response_code := 200;
@@ -1012,6 +999,7 @@ begin
     php_request_startup(TSRMLS_D);
      if Assigned(FOnRequestStartup) then
       FOnRequestStartup(Self);
+
     TimeStr := IntToStr(FMaxExecutionTime);
     zend_alter_ini_entry('max_execution_time', 19, PChar(TimeStr), Length(TimeStr), ZEND_INI_SYSTEM, ZEND_INI_STAGE_RUNTIME);
 
@@ -1049,9 +1037,10 @@ begin
     if not FTerminated then
      begin
        php_request_shutdown(nil);
-       gl := GetSAPIGlobals(TSRMLS_D);
+       gl := GetSAPIGlobals;
        gl^.server_context := nil;
      end;
+
 
     if Assigned(FOnRequestShutdown) then
       FOnRequestShutdown(Self);
@@ -1063,16 +1052,16 @@ begin
 end;
 
 
-procedure TpsvCustomPHP.PrepareVariables(TSRMLS_D: pointer);
+procedure TpsvCustomPHP.PrepareVariables;
 var
   ht  : PHashTable;
   data: ^ppzval;
   cnt : integer;
 begin
   {$IFDEF PHP4}
-   ht := GetSymbolsTable(TSRMLS_D);
+   ht := GetSymbolsTable;
   {$ELSE}
-   ht := @GetExecutorGlobals(TSRMLS_D).symbol_table;
+   ht := @GetExecutorGlobals.symbol_table;
   {$ENDIF}
   if Assigned(ht) then
    begin
@@ -1179,7 +1168,7 @@ begin
   FMaxInputTime := 0;
   FWaitForShutdown := false;
   FConstants := TPHPConstants.Create(Self);
-  FRequestList := TThreadList.Create;
+  FRequestCount := 0;
   FHash := TStringList.Create;
   FHash.Duplicates := dupError;
   FHash.Sorted := true;
@@ -1192,7 +1181,6 @@ begin
   ShutdownAndWaitFor;
   FEngineActive := false;
   FConstants.Free;
-  FRequestList.Free;
   FHash.Free;
   DeleteCriticalSection(FLock);
   if (PHPEngine = Self) then
@@ -1351,12 +1339,16 @@ begin
 
   FLibraryModule.size := sizeOf(Tzend_module_entry);
   FLibraryModule.zend_api := ZEND_MODULE_API_NO;
+  {$IFDEF PHP_DEBUG}
+  FLibraryModule.zend_debug := 1;
+  {$ELSE}
   FLibraryModule.zend_debug := 0;
+  {$ENDIF}
   FLibraryModule.zts := USING_ZTS;
   FLibraryModule.name := 'php4delphi_internal';
   FLibraryModule.functions := nil;
-  FLibraryModule.module_startup_func := nil;
-  FLibraryModule.module_shutdown_func := nil;
+  FLibraryModule.module_startup_func := @minit;
+  FLibraryModule.module_shutdown_func := @mshutdown;
   FLibraryModule.info_func := @php_info_library;
   FLibraryModule.version := '7.0';
   {$IFDEF PHP4}
@@ -1419,6 +1411,7 @@ begin
    Exit;
 
   try
+    
     delphi_sapi_module.shutdown(@delphi_sapi_module);
     sapi_shutdown;
      //Shutdown PHP thread safe resource manager
@@ -1440,6 +1433,11 @@ var
 begin
   skip := false;
   ALib.Refresh;
+
+  //No functions defined, skip this library
+  if ALib.Functions.Count = 0 then
+   Exit;
+
   for cnt := 0 to ALib.Functions.Count - 1 do
    begin
       FN := Lowercase(ALib.Functions[cnt].FunctionName);
@@ -1527,6 +1525,7 @@ begin
       {$ENDIF}
     end;
 
+
     FLibraryEntryTable[FHash.Count+12].fname := nil;
     FLibraryEntryTable[FHash.Count+12].handler := nil;
     {$IFDEF PHP4}
@@ -1560,13 +1559,15 @@ begin
 
      try
       FHash.Clear;
+
       for i := 0 to Librarian.Count -1 do
       begin
         RegisterLibrary(Librarian.GetLibrary(I));
       end;
 
+
       //Start PHP thread safe resource manager
-      tsrm_startup(128, 1, TSRM_ERROR_LEVEL_CORE , 'TSRM.LOG');
+      tsrm_startup(1, 1, 0 , nil);
 
       sapi_startup(@delphi_sapi_module);
 
@@ -1597,7 +1598,7 @@ begin
          DLLName := IncludeTrailingBackSlash(FDLLFolder) + PHPWin
            else
              DLLName := PHPWin;
-      LoadPHP;
+      LoadPHP(DLLName);
       if FReportDLLError then
        begin
          if PHPLib = 0 then raise Exception.CreateFmt('%s not found', [DllName]);
@@ -1658,12 +1659,8 @@ begin
   AllClear := false;
   while not AllClear do
    begin
-      try
-        cnt := FRequestList.LockList.Count;
-       finally
-         FRequestList.UnlockList;
-       end;
-       if cnt <= 0 then
+      cnt := FRequestCount;
+      if cnt <= 0 then
         AllClear := true
          else
            Sleep(250);
@@ -1685,6 +1682,16 @@ begin
      for cnt := 0 to Librarian.Count - 1 do
       Librarian.GetLibrary(cnt).Locked := false;
    end;
+end;
+
+procedure TPHPEngine.RemoveRequest;
+begin
+  InterlockedDecrement(FRequestCount);
+end;
+
+procedure TPHPEngine.AddRequest;
+begin
+  InterlockedIncrement(FRequestCount);
 end;
 
 { TPHPMemoryStream }

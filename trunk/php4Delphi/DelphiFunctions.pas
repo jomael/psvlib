@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: DelphiFunctions.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: DelphiFunctions.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit DelphiFunctions;
 
@@ -971,7 +971,6 @@ var
  ObjName : string;
  php : TComponent;
  gl : psapi_globals_struct;
- p : pointer;
  Form : TCustomForm;
 {$IFDEF VERSION7}
  Scripter : TPHPScriptableObject;
@@ -984,8 +983,7 @@ begin
   end;
   ObjName  := Param[0]^.value.str.val;
 
-  p := ts_resource_ex(0, nil);
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   php := TComponent(gl^.server_context);
   if not Assigned(php) then
    begin

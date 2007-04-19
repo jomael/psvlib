@@ -46,7 +46,6 @@ type
   protected
     procedure RegisterLibrary; virtual;
     procedure UnregisterLibrary; virtual;
-    procedure Loaded; override;
   public
     constructor Create(AOwner : TComponent); override;
     destructor  Destroy; override;
@@ -95,14 +94,6 @@ procedure TCustomPHPLibrary.Refresh;
 begin
 end;
 
-procedure TCustomPHPLibrary.Loaded;
-begin
-  inherited;
-  UnregisterLibrary;
-  RegisterLibrary;
-end;
-
-
 
 procedure TCustomPHPLibrary.RegisterLibrary;
 begin
@@ -119,7 +110,10 @@ end;
 
 procedure TCustomPHPLibrary.SetLibraryName(AValue: string);
 begin
-  FLibraryName := AValue;
+  if FLibraryName <> AValue then
+   begin
+     FLibraryName := AValue;
+   end;  
 end;
 
 procedure TCustomPHPLibrary.UnregisterLibrary;
@@ -148,7 +142,8 @@ end;
 
 procedure TPHPLibrarian.AddLibrary(ALibrary: TCustomPHPLibrary);
 begin
-  FLibraries.Add(ALibrary);
+  if FLibraries.IndexOf(ALibrary) = -1 then
+   FLibraries.Add(ALibrary);
 end;
 
 function TPHPLibrarian.Count: integer;
@@ -183,5 +178,5 @@ initialization
 
 finalization
   UnInitLibrarian;
-  
+
 end.

@@ -8,7 +8,7 @@
 { http://users.chello.be/ws36637                        }
 {*******************************************************}
 
-{ $Id: PHP.INC,v 6.2 12/2006 delphi32 Exp $ }
+{ $Id: PHP.INC,v 7.0 04/2007 delphi32 Exp $ }
 
 {IMPORTANT:
 If you are using PHP version 4.2.x...4.3.0 please change $DEFINE PHP433 to $DEFINE PHP430
@@ -26,6 +26,7 @@ backward compatibility between PHP versions.
 {.$DEFINE PHP4}
 {.$DEFINE PHP430}
 {.$DEFINE PHP433}
+{.$DEFINE PHP435}
 {.$DEFINE PHP446}
 
 {If you are using PHP 4 please comment $DEFINE PHP5}
@@ -65,6 +66,7 @@ backward compatibility between PHP versions.
   {$UNDEF PHP4}
   {$UNDEF PHP430}
   {$UNDEF PHP433}
+  {$UNDEF PHP435}
   {$UNDEF PHP446}
 {$ENDIF}
 
@@ -74,6 +76,7 @@ backward compatibility between PHP versions.
 {.$DEFINE PHP4DELPHI_AUTOLOAD}     //Load php4ts.dll at initialization
 {.$DEFINE PHP4DELPHI_AUTOUNLOAD}   // Unload php4ts.dll at finalization
 
+{.$DEFINE PHP_DEBUG}
 
 {$DEFINE REGISTER_COLORS} //register php constants for colors
 
@@ -137,6 +140,11 @@ backward compatibility between PHP versions.
   {$ENDIF}
 {$ENDIF}
 
+{$IFDEF VERSION10}
+  {$IFNDEF VER180}
+    {$DEFINE VERSION11}                                     {Delphi 2007}
+  {$ENDIF}
+{$ENDIF}
 
 {$IFDEF VERSION6}
   {$WARN SYMBOL_PLATFORM OFF}

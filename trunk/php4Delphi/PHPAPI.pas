@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: PHPAPI.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: PHPAPI.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit phpAPI;
 
@@ -65,9 +65,9 @@ var
   php_ob_init_conflict: function (handler_new : PChar; handler_set : pChar; TSRMLS_DC : pointer) : integer; cdecl;
 
 
-function GetSymbolsTable(TSRMLS_DC : pointer) : PHashTable;
-function GetTrackHash(Name : string; TSRMLS_DC : pointer) : PHashTable;
-function GetSAPIGlobals(TSRMLS_DC : pointer) : Psapi_globals_struct;
+function GetSymbolsTable : PHashTable;
+function GetTrackHash(Name : string) : PHashTable;
+function GetSAPIGlobals : Psapi_globals_struct;
 procedure phperror(Error : PChar);
 
 var
@@ -215,11 +215,7 @@ function PG(TSRMLS_DC : pointer) : Pphp_Core_Globals;
 
 procedure PHP_FUNCTION(var AFunction : zend_function_entry; AName : PChar; AHandler : pointer);
 
-{$IFDEF PHP4}
-function LoadPHP(const DllFileName: string = 'php4ts.dll') : boolean;
-{$ELSE}
-function LoadPHP(const DllFileName: string = 'php5ts.dll') : boolean;
-{$ENDIF}
+function LoadPHP(const DllFileName: string = PHPWin) : boolean;
 
 procedure UnloadPHP;
 
@@ -262,11 +258,12 @@ begin
 end;
 
 {$IFDEF PHP4}
-function GetSymbolsTable(TSRMLS_DC : pointer) : PHashTable;
+function GetSymbolsTable : PHashTable;
 var
  executor_globals : pointer;
  executor_globals_value : integer;
  executor_hash : PHashTable;
+ tsrmls_dc : pointer;
 begin
   if not PHPLoaded then
    begin
@@ -276,6 +273,7 @@ begin
 
   executor_globals := GetProcAddress(PHPLib, 'executor_globals_id');
   executor_globals_value := integer(executor_globals^);
+  tsrmls_dc := tsrmls_fetch;
   asm
     mov ecx, executor_globals_value
     mov edx, dword ptr tsrmls_dc
@@ -287,14 +285,14 @@ begin
   Result := executor_hash;
 end;
 {$ELSE}
-function GetSymbolsTable(TSRMLS_DC : pointer) : PHashTable;
+function GetSymbolsTable : PHashTable;
 begin
-  Result := @GetExecutorGlobals(TSRMLS_DC).symbol_table;
+  Result := @GetExecutorGlobals.symbol_table;
 end;
 
 {$ENDIF}
 
-function GetTrackHash(Name : string; TSRMLS_DC : pointer) : PHashTable;
+function GetTrackHash(Name : string) : PHashTable;
 var
  data : ^ppzval;
  arr  : PHashTable;
@@ -302,9 +300,9 @@ var
 begin
  Result := nil;
   {$IFDEF PHP4}
-   arr := GetSymbolsTable(TSRMLS_DC);
+   arr := GetSymbolsTable;
   {$ELSE}
-   arr := @GetExecutorGlobals(TSRMLS_DC).symbol_table;
+   arr := @GetExecutorGlobals.symbol_table;
   {$ENDIF}
  if Assigned(Arr) then
   begin
@@ -318,14 +316,16 @@ begin
 end;
 
 
-function GetSAPIGlobals(TSRMLS_DC : pointer) : Psapi_globals_struct;
+function GetSAPIGlobals : Psapi_globals_struct;
 var
  sapi_globals_value : integer;
  sapi_globals : Psapi_globals_struct;
+ tsrmls_dc : pointer;
 begin
   Result := nil;
   if Assigned(sapi_globals_id) then
    begin
+     tsrmls_dc := tsrmls_fetch;
      sapi_globals_value := integer(sapi_globals_id^);
      asm
        mov ecx, sapi_globals_value
@@ -452,11 +452,7 @@ begin
 end;
 
 
-{$IFDEF PHP4}
-function LoadPHP(const DllFileName: string = 'php4ts.dll') : boolean;
-{$ELSE}
-function LoadPHP(const DllFileName: string = 'php5ts.dll') : boolean;
-{$ENDIF}
+function LoadPHP(const DllFileName: string = PHPWin) : boolean;
 
 begin
   Result := false;
@@ -839,11 +835,7 @@ begin
   Result.MinorVersion := 0;
   Result.Release := 0;
   Result.Build := 0;
-  {$IFDEF PHP4}
-  FileName := 'php4ts.dll';
-  {$ELSE}
-  FileName := 'php5ts.dll';
-  {$ENDIF}
+  FileName := PHPWin;
   InfoSize := GetFileVersionInfoSize(PChar(FileName), Wnd);
    if InfoSize <> 0 then
     begin

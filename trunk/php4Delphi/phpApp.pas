@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: phpApp.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: phpApp.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 
 {$DENYPACKAGEUNIT}

@@ -9,7 +9,7 @@
 
 {$I PHP.INC}
 
-{ $Id: php4AppUnit.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: php4AppUnit.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit php4AppUnit;
 
@@ -70,7 +70,7 @@ var
 procedure php_info_delphi(zend_module : Pointer; TSRMLS_DC : pointer); cdecl;
 begin
   php_info_print_table_start();
-  php_info_print_table_row(2, PChar('SAPI module version'), PChar('PHP4Delphi 6.2 Feb 2006'));
+  php_info_print_table_row(2, PChar('SAPI module version'), PChar('PHP4Delphi 7.0 Apr 2007'));
   php_info_print_table_row(2, PChar('Home page'), PChar('http://users.chello.be/ws36637'));
   php_info_print_table_end();
 end;
@@ -93,7 +93,7 @@ var
  gl : psapi_globals_struct;
 begin
   Result := 0;
-  gl := GetSAPIGlobals(p);
+  gl := GetSAPIGlobals;
   if Assigned(gl) then
    begin
      php := TPHPInfoBlock(gl^.server_context);
@@ -124,7 +124,7 @@ var
  ts : pointer;
 begin
   ts := ts_resource_ex(0, nil);
-  gl := GetSAPIGlobals(ts);
+  gl := GetSAPIGlobals;
   InfoBlock := TPHPInfoBlock(gl^.server_context);
   php_register_variable('SERVER_NAME','DELPHI', val, p);
   php_register_variable('SERVER_SOFTWARE', 'Delphi', val, p);
@@ -188,12 +188,16 @@ begin
   php_delphi_module.module_startup_func := nil;
   php_delphi_module.module_shutdown_func := nil;
   php_delphi_module.info_func := @php_info_delphi;
-  php_delphi_module.version := '6.2';
+  php_delphi_module.version := '7.0';
   {$IFDEF PHP4}
   php_delphi_module.global_startup_func := nil;
   {$ENDIF}
   php_delphi_module.request_shutdown_func := nil;
+  {$IFDEF PHP5}
+  {$IFNDEF PHP520}
   php_delphi_module.global_id := 0;
+  {$ENDIF}
+  {$ENDIF}
   php_delphi_module.module_started := 0;
   php_delphi_module._type := 0;
   php_delphi_module.handle := nil;
@@ -210,7 +214,7 @@ var
   InfoBlock : TPHPInfoBlock;
 begin
   InfoBlock := TPHPInfoBlock(RequestID);
-  ht := GetSymbolsTable(TSRMLS_D);
+  ht := GetSymbolsTable;
   if Assigned(ht) then
    begin
      for cnt := 0 to InfoBlock.VarList.Count - 1  do
@@ -254,7 +258,7 @@ begin
    file_handle.opened_path := nil;
 
    PG(TSRMLS_D)^.register_globals := true;
-   gl := GetSAPIGlobals(TSRMLS_D);
+   gl := GetSAPIGlobals;
    TPHPInfoBlock(RequestID).FBuffer := '';
    gl^.server_context := pointer(RequestID);
    gl^.sapi_headers.http_response_code := 200;
@@ -313,7 +317,7 @@ begin
   file_handle._type := ZEND_HANDLE_FD;
 
   PG(TSRMLS_D)^.register_globals := true;
-  gl := GetSAPIGlobals(TSRMLS_D);
+  gl := GetSAPIGlobals;
   TPHPInfoBlock(RequestID).FBuffer := '';
   gl^.server_context := pointer(RequestID);
   gl^.sapi_headers.http_response_code := 200;

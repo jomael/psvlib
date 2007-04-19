@@ -9,7 +9,7 @@
 {*******************************************************}
 {$I PHP.INC}
 
-{ $Id: PHPFunctions.pas,v 6.2 02/2006 delphi32 Exp $ } 
+{ $Id: PHPFunctions.pas,v 7.0 04/2007 delphi32 Exp $ } 
 
 unit phpFunctions;
 
@@ -132,13 +132,13 @@ type
   TPHPFunctions = class(TCollection)
   private
     FOwner: TPersistent;
+  protected
     function GetItem(Index: Integer): TPHPFunction;
     procedure SetItem(Index: Integer; Value: TPHPFunction);
-  protected
     function GetOwner: TPersistent; override;
     procedure SetItemName(Item: TCollectionItem); override;
   public
-    constructor Create(Owner: TPersistent; ItemClass: TCollectionItemClass);
+    constructor Create(AOwner: TPersistent; ItemClass: TCollectionItemClass); virtual;
     function Add : TPHPFunction;
     function FunctionByName(const AName : string) : TPHPFunction;
     property Items[Index: Integer]: TPHPFunction read GetItem write SetItem; default;
@@ -191,10 +191,10 @@ begin
   Result := TPHPFunction(inherited Add);
 end;
 
-constructor TPHPFunctions.Create(Owner: TPersistent; ItemClass: TCollectionItemClass);
+constructor TPHPFunctions.Create(AOwner: TPersistent; ItemClass: TCollectionItemClass);
 begin
   inherited Create(ItemClass);
-  FOwner := Owner;
+  FOwner := AOwner;
 end;
 
 function TPHPFunctions.FunctionByName(const AName: string): TPHPFunction;
@@ -259,6 +259,7 @@ end;
 
 { TPHPFunction }
 
+
 procedure TPHPFunction.AssignTo(Dest: TPersistent);
 begin
   if Dest is TPHPFunction then
@@ -268,16 +269,20 @@ begin
       with TPHPFunction(Dest) do
       begin
         Tag := Self.Tag;
+        Parameters.Assign(Self.Parameters);
+        Description := Self.Description;
+        FunctionName := Self.FunctionName;
       end;
     finally
       if Assigned(Collection) then Collection.EndUpdate;
     end;
   end else inherited AssignTo(Dest);
 end;
+  
 
 constructor TPHPFunction.Create(Collection: TCollection);
 begin
-  inherited;
+  inherited Create(Collection);
   FFunctionParams := TFunctionParams.Create(TPHPFunctions(Self.Collection).GetOwner, TFunctionParam);
   FZendVar := TZendVariable.Create;
 end;
