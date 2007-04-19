@@ -7,7 +7,8 @@
 { http://users.chello.be/ws36637                        }
 {*******************************************************}
 
-{ $Id: skeleton.dpr,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: skeleton.dpr,v 7.0 04/2007 delphi32 Exp $ }
+
 {$I php.inc}
 
 library skeleton;

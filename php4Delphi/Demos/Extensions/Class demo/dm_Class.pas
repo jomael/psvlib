@@ -7,7 +7,7 @@
 { http://users.chello.be/ws36637                        }
 {*******************************************************}
 
-{ $Id: dm_Class.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: dm_Class.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit dm_Class;
 

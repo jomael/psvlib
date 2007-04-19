@@ -33,6 +33,7 @@ var
 implementation
 
 {$R *.DFM}
+{$R WindowsXP.res}
 
 procedure TfrmPHPTest.Button1Click(Sender: TObject);
 begin

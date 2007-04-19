@@ -7,7 +7,7 @@
 { http://users.chello.be/ws36637                        }
 {*******************************************************}
 
-{ $Id: Unit1.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: Unit1.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 unit Unit1;
 
@@ -34,8 +34,6 @@ type
     procedure PHPLibrary1Functions1Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
       ThisPtr: Pzval; TSRMLS_DC: Pointer);
-    procedure FormCreate(Sender: TObject);
-    procedure FormDestroy(Sender: TObject);
   private
     { Private declarations }
   public
@@ -48,6 +46,7 @@ var
 implementation
 
 {$R *.DFM}
+{$R WindowsXP.res}
 
 procedure TfrmLibDemo.Button1Click(Sender: TObject);
 begin
@@ -56,7 +55,9 @@ end;
 
 procedure TfrmLibDemo.btnExecuteClick(Sender: TObject);
 begin
-   psvPhp1.RunCode(memo1.Lines.text);
+  PHPEngine.StartupEngine;
+  psvPhp1.RunCode(memo1.Lines.text);
+  PHPEngine.ShutdownAndWaitFor;
 end;
 
 procedure TfrmLibDemo.PHPLibrary1Functions0Execute(Sender: TObject;
@@ -71,16 +72,6 @@ procedure TfrmLibDemo.PHPLibrary1Functions1Execute(Sender: TObject;
   TSRMLS_DC: Pointer);
 begin
   Button1.Click;
-end;
-
-procedure TfrmLibDemo.FormCreate(Sender: TObject);
-begin
-  PHPEngine.StartupEngine;
-end;
-
-procedure TfrmLibDemo.FormDestroy(Sender: TObject);
-begin
-   PHPEngine.ShutdownEngine;
 end;
 
 end.
