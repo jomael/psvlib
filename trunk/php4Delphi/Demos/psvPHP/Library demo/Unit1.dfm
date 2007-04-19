@@ -13,8 +13,6 @@ object frmLibDemo: TfrmLibDemo
   Font.Style = []
   OldCreateOrder = False
   Position = poScreenCenter
-  OnCreate = FormCreate
-  OnDestroy = FormDestroy
   PixelsPerInch = 96
   TextHeight = 13
   object Memo1: TMemo
@@ -24,7 +22,8 @@ object frmLibDemo: TfrmLibDemo
     Height = 189
     Lines.Strings = (
       'formcaption("Hello from PHP");'
-      'buttonclick();')
+      'buttonclick();'
+      'my_createcontrol();')
     TabOrder = 0
   end
   object Button1: TButton

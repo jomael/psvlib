@@ -60,6 +60,7 @@ implementation
 
 {$R *.DFM}
 {$R internal.res}
+{$R WindowsXP.res}
 
 function StringToOleStream(const AString: string): IStream;
 var

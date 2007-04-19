@@ -1,6 +1,6 @@
 object frmPHPTest: TfrmPHPTest
-  Left = 218
-  Top = 174
+  Left = 422
+  Top = 286
   Width = 590
   Height = 435
   Caption = 'psvPHP test'

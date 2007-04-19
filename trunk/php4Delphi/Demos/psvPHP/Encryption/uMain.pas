@@ -58,6 +58,7 @@ var
 implementation
 
 {$R *.dfm}
+{$R WindowsXP.res}
 
 { TfrmMain }
 

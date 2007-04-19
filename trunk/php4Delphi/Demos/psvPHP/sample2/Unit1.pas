@@ -39,6 +39,7 @@ var
 implementation
 
 {$R *.DFM}
+{$R WindowsXP.res}
 
 procedure TForm1.Button1Click(Sender: TObject);
 begin

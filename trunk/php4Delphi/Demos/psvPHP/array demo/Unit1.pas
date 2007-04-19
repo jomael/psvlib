@@ -7,7 +7,7 @@
 { http://users.chello.be/ws36637                        }
 {*******************************************************}
 
-{ $Id: Unit1.pas,v 6.2 02/2006 delphi32 Exp $ }
+{ $Id: Unit1.pas,v 7.0 04/2007 delphi32 Exp $ }
 
 //This sample shows how to return an array as a result of PHP function
 unit Unit1;
@@ -45,6 +45,7 @@ var
 implementation
 
 {$R *.DFM}
+{$R WindowsXP.res}
 
 procedure TForm1.PHPLibrary1Functions0Execute(Sender: TObject;
   Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
