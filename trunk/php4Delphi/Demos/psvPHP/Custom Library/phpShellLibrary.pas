@@ -25,7 +25,7 @@ type
   TphpShellLibrary = class(TCustomPHPLibrary)
   protected
     procedure _ShellExecute(Sender: TObject; Parameters: TFunctionParams; var ReturnValue: Variant;
-                            ThisPtr: Pzval; TSRMLS_DC: Pointer);
+                            ZendVar: TZendVariable; TSRMLS_DC: Pointer);
   public
     procedure Refresh; override;
   end;
@@ -44,7 +44,7 @@ end;
 { TphpShellLibrary }
 
 procedure TphpShellLibrary._ShellExecute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 var
   hWnd : THandle;

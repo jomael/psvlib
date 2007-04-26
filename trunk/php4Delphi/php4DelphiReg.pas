@@ -20,10 +20,12 @@ uses
   {$IFDEF VERSION6}
   DesignIntf,
   DesignEditors,
+  ToolsAPI,
   {$ELSE}
   dsgnintf,
   {$ENDIF}
-   ShlObj,
+  Graphics,
+  ShlObj,
   ZendAPI, PHPAPI,
   PHP4Delphi, phpAbout, phpModules, phpLibrary, ShellAPI,
   phpClass,
@@ -56,16 +58,43 @@ type
     procedure Edit; override;
   end;
 
+{$IFDEF VERSION10}
+procedure RegisterSplashScreen;
+{$ENDIF}
+
 procedure Register;
 
 implementation
+
+{$R php4DelphiSplash.res}
 
 {$IFDEF VERSION11}
 {$R php4delphi.dcr}
 {$ENDIF}
 
+{$IFDEF VERSION10}
+procedure RegisterSplashScreen;
+var
+  Bmp: TBitmap;
+begin
+  Bmp := TBitmap.Create;
+  Bmp.LoadFromResourceName( HInstance, 'PHPDELPHIL' );
+  try
+    SplashScreenServices.AddPluginBitmap('php4Delphi version 7.0',
+                                          Bmp.Handle, False, 'Registered', '' );
+  finally
+    Bmp.Free;
+  end;
+
+end;
+
+{$ENDIF}
+
 procedure Register;
 begin
+  {$IFDEF VERSION10}
+  RegisterSplashScreen;
+  {$ENDIF}
   RegisterComponents('PHP', [TPHPEngine]);
   RegisterComponents('PHP', [TpsvPHP]);
   RegisterComponents('PHP', [TPHPLibrary]);

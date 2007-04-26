@@ -26,12 +26,12 @@ type
     Button1: TButton;
     ListBox1: TListBox;
     PHPEngine: TPHPEngine;
-    procedure PHPLibrary1Functions0Execute(Sender: TObject;
-      Parameters: TFunctionParams; var ReturnValue: Variant;
-      ThisPtr: Pzval; TSRMLS_DC: Pointer);
     procedure Button1Click(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
+    procedure ExecuteGetArray(Sender: TObject; Parameters: TFunctionParams;
+      var ReturnValue: Variant; ZendVar: TZendVariable;
+      TSRMLS_DC: Pointer);
   private
     { Private declarations }
   public
@@ -47,38 +47,6 @@ implementation
 {$R *.DFM}
 {$R WindowsXP.res}
 
-procedure TForm1.PHPLibrary1Functions0Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
-  TSRMLS_DC: Pointer);
-var
-  ht  : PHashTable;
-  data: ^ppzval;
-  cnt : integer;
-  variable : pzval;
-  tmp : ^ppzval;
-begin
-  ht := GetSymbolsTable(TSRMLS_DC);
-  if Assigned(ht) then
-   begin
-      new(data);
-       if zend_hash_find(ht, 'ar', 3, data) = SUCCESS then
-          begin
-            variable := data^^;
-            if variable^._type = IS_ARRAY then
-             begin
-               SetLength(ar, zend_hash_num_elements(variable^.value.ht));
-               for cnt := 0 to zend_hash_num_elements(variable^.value.ht) -1  do
-                begin
-                  new(tmp);
-                  zend_hash_index_find(variable^.value.ht, cnt, tmp);
-                  ar[cnt] := tmp^^^.value.str.val;
-                  freemem(tmp);
-                end;
-             end;
-          end;
-       freemem(data);
-   end;
-end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
@@ -102,6 +70,39 @@ end;
 procedure TForm1.FormDestroy(Sender: TObject);
 begin
    PHPEngine.ShutdownEngine;
+end;
+
+procedure TForm1.ExecuteGetArray(Sender: TObject;
+  Parameters: TFunctionParams; var ReturnValue: Variant;
+  ZendVar: TZendVariable; TSRMLS_DC: Pointer);
+var
+  ht  : PHashTable;
+  data: ^ppzval;
+  cnt : integer;
+  variable : pzval;
+  tmp : ^ppzval;
+begin
+  ht := GetSymbolsTable;
+  if Assigned(ht) then
+   begin
+      new(data);
+       if zend_hash_find(ht, 'ar', 3, data) = SUCCESS then
+          begin
+            variable := data^^;
+            if variable^._type = IS_ARRAY then
+             begin
+               SetLength(ar, zend_hash_num_elements(variable^.value.ht));
+               for cnt := 0 to zend_hash_num_elements(variable^.value.ht) -1  do
+                begin
+                  new(tmp);
+                  zend_hash_index_find(variable^.value.ht, cnt, tmp);
+                  ar[cnt] := tmp^^^.value.str.val;
+                  freemem(tmp);
+                end;
+             end;
+          end;
+       freemem(data);
+   end;
 end;
 
 end.

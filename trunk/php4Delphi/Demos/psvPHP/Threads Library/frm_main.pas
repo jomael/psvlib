@@ -25,7 +25,7 @@ type
     procedure btnRunClick(Sender: TObject);
     procedure PHPLibrary1Functions0Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
-      ThisPtr: pzval; TSRMLS_DC: Pointer);
+      ZendVar : TZendVariable; TSRMLS_DC: Pointer);
     procedure btnNoThreadsClick(Sender: TObject);
   private
     { Private declarations }
@@ -65,7 +65,7 @@ var
 begin
   EmptyWorkingSet(GetCurrentProcess);
   MemoOut.Lines.Clear;
-  for cnt := 0 to 99 do
+  for cnt := 0 to 100 do
    begin
      T := TPHPThread(Pool.GetThread);
      T.Pool := Pool;
@@ -75,10 +75,10 @@ begin
 end;
 
 procedure TfrmMain.PHPLibrary1Functions0Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 begin
-  ReturnValue:= 'Nils War Hier';
+  ReturnValue:= Parameters[0].ZendVariable.AsString;
 end;
 
 procedure TfrmMain.btnNoThreadsClick(Sender: TObject);
@@ -86,7 +86,7 @@ var
  cnt : integer;
 begin
   MemoOut.Lines.Clear;
-  for cnt := 0 to 99 do
+  for cnt := 0 to 100 do
    MemoOut.Lines.Add(psvPHP.RunCode(MemoCode.Lines));
 end;
 

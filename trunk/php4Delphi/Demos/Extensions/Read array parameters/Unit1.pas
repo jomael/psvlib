@@ -20,7 +20,7 @@ type
   TOneWireWrapper = class(TPHPExtension)
     procedure OneWireWrapperFunctions0Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
-      ThisPtr: pzval; TSRMLS_DC: Pointer);
+      ZendVar : TZendVariable; TSRMLS_DC: Pointer);
   private
     { Private declarations }
   public
@@ -35,7 +35,7 @@ implementation
 {$R *.DFM}
 
 procedure TOneWireWrapper.OneWireWrapperFunctions0Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 var
  variable : pzval;

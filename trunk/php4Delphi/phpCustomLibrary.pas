@@ -30,11 +30,6 @@ type
     function GetEngineActive : boolean;
    end;
 
-  IPHPRequest = interface(IUnknown)
-  ['{0CA2321B-E895-4693-936F-C31C1FCE6518}']
-    function GetEngine : IPHPEngine;
-   end;
-
 
   TCustomPHPLibrary = class(TPHPComponent)
   private
