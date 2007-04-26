@@ -102,7 +102,7 @@ type
 
 
   TPHPExecute = procedure(Sender : TObject; Parameters : TFunctionParams ; var ReturnValue : Variant;
-                          ThisPtr : pzval;  TSRMLS_DC : pointer) of object;
+                          ZendVar : TZendVariable;  TSRMLS_DC : pointer) of object;
 
   TPHPFunction = class(TCollectionItem)
   private
@@ -110,17 +110,14 @@ type
     FFunctionName  : string;
     FTag       : integer;
     FFunctionParams: TFunctionParams;
-    FZendVar : TZendVariable;
     FDescription: string;
     procedure SetFunctionParams(const Value: TFunctionParams);
   public
-    ReturnValue : variant;
     constructor Create(Collection : TCollection); override;
     destructor Destroy; override;
     function  GetDisplayName: string; override;
     procedure SetDisplayName(const Value: string); override;
     procedure AssignTo(Dest: TPersistent); override;
-    property  ZendVar: TZendVariable read FZendVar;
   published
     property FunctionName : string read FFunctionName write SetDisplayName;
     property Tag  : integer read FTag write FTag;
@@ -284,14 +281,12 @@ constructor TPHPFunction.Create(Collection: TCollection);
 begin
   inherited Create(Collection);
   FFunctionParams := TFunctionParams.Create(TPHPFunctions(Self.Collection).GetOwner, TFunctionParam);
-  FZendVar := TZendVariable.Create;
 end;
 
 destructor TPHPFunction.Destroy;
 begin
   FOnExecute := nil;
   FFunctionParams.Free;
-  FZendVar.Free;
   inherited;
 end;
 
@@ -425,6 +420,7 @@ begin
       with TFunctionParam(Dest) do
       begin
         ParamType := Self.ParamType;
+        Name := Self.Name;
       end;
     finally
       if Assigned(Collection) then Collection.EndUpdate;

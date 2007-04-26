@@ -34,14 +34,14 @@ type
     procedure PaintBoxPaint(Sender: TObject);
     procedure PHPLibrary1Functions0Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
-      ThisPtr: pzval; TSRMLS_DC: Pointer);
+      ZendVar : TZendVariable; TSRMLS_DC: Pointer);
     procedure PHPLibraryFunctions1Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
-      ThisPtr: pzval; TSRMLS_DC: Pointer);
+      ZendVar : TZendVariable; TSRMLS_DC: Pointer);
     procedure Button1Click(Sender: TObject);
     procedure PHPLibraryFunctions2Execute(Sender: TObject;
       Parameters: TFunctionParams; var ReturnValue: Variant;
-      ThisPtr: pzval; TSRMLS_DC: Pointer);
+      ZendVar : TZendVariable; TSRMLS_DC: Pointer);
   private
     { Private declarations }
     Busy : boolean;
@@ -141,7 +141,7 @@ begin
 end;
 
 procedure TForm1.PHPLibrary1Functions0Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 begin
   B.Canvas.Brush.Color := clWhite;
@@ -155,7 +155,7 @@ begin
 end;
 
 procedure TForm1.PHPLibraryFunctions1Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 var
  X, Y : integer;
@@ -196,7 +196,7 @@ begin
 end;
 
 procedure TForm1.PHPLibraryFunctions2Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 var
  X, Y : integer;

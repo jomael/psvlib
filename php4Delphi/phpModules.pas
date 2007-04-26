@@ -92,7 +92,6 @@ type
   TPHPApplication = class(TComponent)
   private
     FClassList : TThreadList;
-    FActiveFunctionName : PChar;
     FPHPExtensionClass: TComponentClass;
     FCriticalSection: TCriticalSection;
     FActivePHPModules: TList;
@@ -603,73 +602,88 @@ var
   pval : pzval;
   idp : pointer;
   id : integer;
+  ReturnValue : variant;
+  FZendVar : TZendVariable;
+  FParameters : TFunctionParams;
+  FActiveFunctionName : string;
 
 begin
  pval := nil;
-
  idp := ts_resource_ex(integer(app_globals_id), nil);
  id := integer(idp^);
  if id <= 0 then
-  Exit;
-
- Params :=  emalloc(ht * sizeOf(ppzval));
+   Exit;
+   
+ FParameters := TFunctionParams.Create(nil, TFunctionParam);
  try
-   if ht > 0 then
-    begin
-      if ( not (_zend_get_parameters_array_ex(ht, Params, TSRMLS_DC) = SUCCESS )) then
-        begin
-          zend_wrong_param_count(TSRMLS_DC);
-          Exit;
-        end;
-      pval := pzval(params^^);
-    end;
 
-
-  DataModule := TPHPExtension(id);
-  if DataModule <> nil then
-  try
-    DataModule.FTSRMLS := TSRMLS_DC;
-    FActiveFunctionName := get_active_function_name(TSRMLS_DC);
-    for cnt := 0 to DataModule.FFunctions.Count - 1 do
+   Params :=  emalloc(ht * sizeOf(ppzval));
+   try
+     if ht > 0 then
       begin
-        if SameText(DataModule.FFunctions[cnt].FunctionName, FActiveFunctionName) then
+        if ( not (_zend_get_parameters_array_ex(ht, Params, TSRMLS_DC) = SUCCESS )) then
           begin
-             AFunction := DataModule.FFunctions[cnt];
-             if Assigned(AFunction.OnExecute) then
-                begin
-                  if AFunction.Parameters.Count <> ht then
-                   begin
-                     zend_wrong_param_count(TSRMLS_DC);
-                     Exit;
+            zend_wrong_param_count(TSRMLS_DC);
+            Exit;
+          end;
+        pval := pzval(params^^);
+      end;
+
+
+    DataModule := TPHPExtension(id);
+    if DataModule <> nil then
+    try
+      DataModule.FTSRMLS := TSRMLS_DC;
+      FActiveFunctionName := get_active_function_name(TSRMLS_DC);
+      for cnt := 0 to DataModule.FFunctions.Count - 1 do
+        begin
+          if SameText(DataModule.FFunctions[cnt].FunctionName, FActiveFunctionName) then
+            begin
+               AFunction := DataModule.FFunctions[cnt];
+               if Assigned(AFunction.OnExecute) then
+                  begin
+                    if AFunction.Parameters.Count <> ht then
+                     begin
+                       zend_wrong_param_count(TSRMLS_DC);
+                       Exit;
+                      end;
+
+                    FParameters.Assign(AFunction.Parameters);
+                    if ht > 0 then begin
+                     for i := 0 to ht - 1 do
+                      begin
+                        if not IsParamTypeCorrect(FParameters[i].ParamType, pval) then
+                         begin
+                           zend_error(E_WARNING, PChar(Format('Wrong parameter type for %s()', [get_active_function_name(TSRMLS_DC)])));
+                           Exit;
+                         end;
+                        FParameters[i].ZendValue := pval;
+                        inc(integer(params^), sizeof(ppzval));
+                        pval := pzval(params^^);
+                      end;
                     end;
 
-                  if ht > 0 then begin
-                   for i := 0 to ht - 1 do
-                    begin
-                      if not IsParamTypeCorrect(AFunction.Parameters[i].ParamType, pval) then
-                       begin
-                         zend_error(E_WARNING, PChar(Format('Wrong parameter type for %s()', [get_active_function_name(TSRMLS_DC)])));
-                         Exit;
-                       end;
-                      AFunction.Parameters[i].ZendValue := pval;
-                      inc(integer(params^), sizeof(ppzval));
-                      pval := pzval(params^^);
+                    FZendVar := TZendVariable.Create;
+                    try
+                     FZendVar.AsZendVariable := return_value;
+                     AFunction.OnExecute(DataModule, FParameters, ReturnValue, FZendVar, TSRMLS_DC);
+                     if FZendVar.ISNull then
+                      variant2zval(ReturnValue, return_value);
+                    finally
+                      FZendVar.Free;
                     end;
                   end;
-
-                  AFunction.ZendVar.AsZendVariable := return_value;
-                  AFunction.OnExecute(DataModule, AFunction.Parameters, AFunction.ReturnValue, this_ptr, TSRMLS_DC);
-                  if AFunction.ZendVar.ISNull then
-                   variant2zval(AFunction.ReturnValue, return_value);
-                end;
-             break;
-          end;
-      end;
+               break;
+            end;
+        end;
+    finally
+      efree(Params);
+    end;
+   except
+   end;
   finally
-    efree(Params);
+     FParameters.Free;
   end;
- except
- end;
 end;
 
 

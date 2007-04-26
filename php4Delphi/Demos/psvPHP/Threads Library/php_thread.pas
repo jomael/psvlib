@@ -54,9 +54,14 @@ begin
 end;
 
 procedure TPHPThread.Run;
+var
+ cnt : integer;
 begin
-  S := PHP.RunCode(Code);
-  Synchronize(Report);
+  for cnt := 1 to 1000 do
+   begin
+     S := PHP.RunCode(Code);
+    // Synchronize(Report);
+   end;
   Stop;
   //We will not destroy thread resources of TSRM
   //(PHP thread safe resource manager)

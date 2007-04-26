@@ -45,7 +45,7 @@ type
      FMethods  : TStringList;
   protected
      procedure _Execute(Sender: TObject; Parameters: TFunctionParams; var ReturnValue: Variant;
-                            ThisPtr: Pzval; TSRMLS_DC: Pointer);
+                        ZendVar: TZendVariable; TSRMLS_DC: Pointer);
     procedure ReturnOutputArg(AValue:variant);
     function GetInputArg(AIndex:integer):variant;
     function GetInputArgAsString(AIndex:integer):string;
@@ -153,7 +153,7 @@ begin
 end;
 
 procedure TPHPSimpleLibrary._Execute(Sender: TObject;
-  Parameters: TFunctionParams; var ReturnValue: Variant; ThisPtr: Pzval;
+  Parameters: TFunctionParams; var ReturnValue: Variant; ZendVar : TZendVariable;
   TSRMLS_DC: Pointer);
 var
  ActiveFunctionName : string;

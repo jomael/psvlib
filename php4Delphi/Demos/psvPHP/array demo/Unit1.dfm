@@ -46,7 +46,7 @@ object Form1: TForm1
         FunctionName = 'get_php_array'
         Tag = 0
         Parameters = <>
-        OnExecute = PHPLibrary1Functions0Execute
+        OnExecute = ExecuteGetArray
       end>
     Left = 52
     Top = 16

@@ -130,7 +130,7 @@ type
     property  ReportDLLError : boolean read FReportDLLError write FReportDLLError;
   end;
 
-  TpsvCustomPHP = class(TPHPComponent, IUnknown, IPHPRequest)
+  TpsvCustomPHP = class(TPHPComponent)
   private
     FHeaders : TPHPHeaders;
     FMaxExecutionTime : integer;
@@ -296,10 +296,9 @@ procedure DispatchRequest(ht : integer; return_value : pzval; this_ptr : pzval;
       return_value_used : integer; TSRMLS_DC : pointer); cdecl;
 {$ENDIF}
 var
- php : TComponent;
+ php : TpsvPHP;
  gl : psapi_globals_struct;
  Lib : IPHPEngine;
- Req : IPHPRequest;
 {$IFNDEF PHP510}
  return_value_ptr : ppzval;
 {$ENDIF}
@@ -309,16 +308,13 @@ begin
   {$ENDIF}
   ZVAL_NULL(return_value);
   gl := GetSAPIGlobals;
-  php := TComponent(gl^.server_context);
+  php := TpsvPHP(gl^.server_context);
   if Assigned(php) then
    begin
      try
-       if Supports(PHP, IPHPRequest, Req) then
-        begin
-          Lib := Req.GetEngine;
-          if lib <> nil then
-           Lib.HandleRequest(ht, return_value, return_value_ptr, this_ptr, return_value_used, TSRMLS_DC);
-        end;
+       Lib := php.GetEngine;
+       if lib <> nil then
+       Lib.HandleRequest(ht, return_value, return_value_ptr, this_ptr, return_value_used, TSRMLS_DC);
      except
       ZVAL_NULL(return_value);
      end;
@@ -996,12 +992,12 @@ begin
             gl^.request_info.content_type := PChar(FContentType);
        end;
 
+    TimeStr := IntToStr(FMaxExecutionTime);
+    zend_alter_ini_entry('max_execution_time', 19, PChar(TimeStr), Length(TimeStr), ZEND_INI_SYSTEM, ZEND_INI_STAGE_RUNTIME);
+
     php_request_startup(TSRMLS_D);
      if Assigned(FOnRequestStartup) then
       FOnRequestStartup(Self);
-
-    TimeStr := IntToStr(FMaxExecutionTime);
-    zend_alter_ini_entry('max_execution_time', 19, PChar(TimeStr), Length(TimeStr), ZEND_INI_SYSTEM, ZEND_INI_STAGE_RUNTIME);
 
 
     FSessionActive := true;
@@ -1205,7 +1201,11 @@ var
   j  : integer;
   FActiveFunctionName : string;
   FunctionIndex : integer;
+  FZendVar : TZendVariable;
+  FParameters : TFunctionParams;
+  ReturnValue : variant;
 begin
+ FParameters := TFunctionParams.Create(nil, TFunctionParam);
  try
 
   if ht > 0 then
@@ -1236,27 +1236,34 @@ begin
                Exit;
              end;
 
+           FParameters.Assign(AFunction.Parameters);
            if ht > 0 then
              begin
                for j := 0 to ht - 1 do
                  begin
-                   if not IsParamTypeCorrect(AFunction.Parameters[j].ParamType, Params[j]^) then
+                   if not IsParamTypeCorrect(FParameters[j].ParamType, Params[j]^) then
                      begin
-                       zend_error(E_WARNING, PChar(Format('Wrong parameter type for %s()', [get_active_function_name(TSRMLS_DC)])));
+                       zend_error(E_WARNING, PChar(Format('Wrong parameter type for %s()', [FActiveFunctionName])));
                        Exit;
                      end;
-                   AFunction.Parameters[j].ZendValue := (Params[j]^);
+                   FParameters[j].ZendValue := (Params[j]^);
                  end;
              end; // if ht > 0
 
-          AFunction.ZendVar.AsZendVariable := return_value; //direct access to zend variable
-          AFunction.OnExecute(Self, AFunction.Parameters, AFunction.ReturnValue, this_ptr, TSRMLS_DC);
-          if AFunction.ZendVar.ISNull then   //perform variant conversion
-            variant2zval(AFunction.ReturnValue, return_value);
+          FZendVar := TZendVariable.Create;
+          try
+           FZendVar.AsZendVariable := return_value;
+           AFunction.OnExecute(Self, FParameters, ReturnValue, FZendVar, TSRMLS_DC);
+           if FZendVar.ISNull then   //perform variant conversion
+             variant2zval(ReturnValue, return_value);
+          finally
+            FZendVar.Free;
+          end;
       end; //if assigned AFunction.OnExecute
     end;
 
   finally
+    FParameters.Free;
     dispose_pzval_array(Params);
   end;
 end;
@@ -1577,7 +1584,6 @@ begin
 
       PrepareIniEntry;
       RegisterConstants;
-
 
       if Assigned(FOnEngineStartup) then
        FOnEngineStartup(Self);

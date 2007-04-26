@@ -42,7 +42,7 @@ History:
 * Thread safe TpsvPHP component
 * New component TPHPEngine introduced
 * RunCode method reimplemented to solve "black horror" of pipes.
-
+* Not fully compatible with previous version due to multithreading, but migration is easy.
 
 6.2 Feb 2006
 
@@ -137,7 +137,12 @@ History:
 5.0.1
 * Fixed problem with number of parameters of zend_getparameters_ex function
 
+5.0
+* First version written in Delphi
 
+
+1.0 - 4.0  
+* php4Delphi was written in C as a DLL with simple Delphi wrapper
  
 
 Before using php4Delphi library:

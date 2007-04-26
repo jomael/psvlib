@@ -42,8 +42,9 @@ object frmMain: TfrmMain
     Height = 89
     Lines.Strings = (
       '<?php'
-      '   print nb_test();'
+      '   print nb_test("Nils War Hier");'
       '?>')
+    ScrollBars = ssBoth
     TabOrder = 2
   end
   object MemoOut: TMemo
@@ -51,6 +52,7 @@ object frmMain: TfrmMain
     Top = 108
     Width = 177
     Height = 89
+    ScrollBars = ssBoth
     TabOrder = 3
   end
   object btnNoThreads: TButton
@@ -78,7 +80,11 @@ object frmMain: TfrmMain
       item
         FunctionName = 'nb_test'
         Tag = 0
-        Parameters = <>
+        Parameters = <
+          item
+            Name = 'Param1'
+            ParamType = tpString
+          end>
         OnExecute = PHPLibrary1Functions0Execute
       end>
     Left = 48
