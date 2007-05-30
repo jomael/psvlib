@@ -1647,7 +1647,7 @@ end;
 
 procedure dispose_pzval_array(Params: pzval_array);
 var
-  i                                               : integer;
+  i : integer;
 begin
   for i := 0 to High(Params) do
     FreeMem(Params[i]);
@@ -2026,20 +2026,24 @@ var
  tsrmls_dc : pointer;
 begin
   Result := nil;
-  global_id := GetProcAddress(PHPLib, PChar(resource_name));
-  if Assigned(global_id) then
-   begin
-     tsrmls_dc := tsrmls_fetch;
-     global_value := integer(global_id^);
-     asm
-       mov ecx, global_value
-       mov edx, dword ptr tsrmls_dc
-       mov eax, dword ptr [edx]
-       mov ecx, dword ptr [eax+ecx*4-4]
-       mov global_ptr, ecx
+  try
+    global_id := GetProcAddress(PHPLib, PChar(resource_name));
+    if Assigned(global_id) then
+     begin
+       tsrmls_dc := tsrmls_fetch;
+       global_value := integer(global_id^);
+       asm
+         mov ecx, global_value
+         mov edx, dword ptr tsrmls_dc
+         mov eax, dword ptr [edx]
+         mov ecx, dword ptr [eax+ecx*4-4]
+         mov global_ptr, ecx
+       end;
+       Result := global_ptr;
      end;
-     Result := global_ptr;
-   end;
+  except
+    Result := nil;
+  end;
 end;
 
 

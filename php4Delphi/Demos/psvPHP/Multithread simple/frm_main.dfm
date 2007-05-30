@@ -1,6 +1,6 @@
 object frmMain: TfrmMain
-  Left = 364
-  Top = 492
+  Left = 513
+  Top = 399
   BorderStyle = bsDialog
   Caption = 'PHP Multithread sample'
   ClientHeight = 81
