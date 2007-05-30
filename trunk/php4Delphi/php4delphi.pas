@@ -308,6 +308,8 @@ begin
   {$ENDIF}
   ZVAL_NULL(return_value);
   gl := GetSAPIGlobals;
+  if gl = nil then
+   Exit;
   php := TpsvPHP(gl^.server_context);
   if Assigned(php) then
    begin
@@ -400,6 +402,9 @@ var
  varcnt : integer;
 begin
   gl := GetSAPIGlobals;
+  if gl = nil then
+   Exit;
+
   php := TpsvPHP(gl^.server_context);
 
   if PHP = nil then
@@ -432,6 +437,12 @@ var
  php : TpsvPHP;
 begin
   gl := GetSAPIGlobals;
+  if gl = nil then
+   begin
+     Result := 0;
+     Exit;
+   end;
+
   php := TpsvPHP(gl^.server_context);
 
   if PHP = nil then
@@ -460,7 +471,11 @@ var
  php : TpsvPHP;
  gl : psapi_globals_struct;
 begin
+  Result := 0;
   gl := GetSAPIGlobals;
+  if gl = nil then
+   Exit;
+
   php := TpsvPHP(gl^.server_context);
   if Assigned(PHPEngine) then
    begin
@@ -471,7 +486,6 @@ begin
     end
       else
         MessageBox(0, msg, 'PHP4Delphi', MB_OK);
-  result := 0;
 end;
 
 function php_delphi_send_header(p1, TSRMLS_DC : pointer) : integer; cdecl;
@@ -902,15 +916,24 @@ var
   data: ^ppzval;
   cnt : integer;
   variable : pzval;
+  {$IFDEF PHP5}
+  EG : pzend_executor_globals;
+  {$ENDIF}
 begin
   if FVariables.Count = 0 then
    Exit;
-   
+
   if FExecuteMethod = emServer then
   {$IFDEF PHP4}
    ht := GetSymbolsTable
   {$ELSE}
-   ht := @GetExecutorGlobals.symbol_table
+    begin
+     EG := GetExecutorGlobals;
+     if Assigned(EG) then
+     ht := @EG.symbol_table
+      else
+        ht := nil;
+    end
   {$ENDIF}
     else
      ht := GetTrackHash('_GET');
@@ -1032,7 +1055,10 @@ begin
 
     if not FTerminated then
      begin
-       php_request_shutdown(nil);
+       try
+        php_request_shutdown(nil);
+       except
+       end; 
        gl := GetSAPIGlobals;
        gl^.server_context := nil;
      end;
@@ -1053,12 +1079,22 @@ var
   ht  : PHashTable;
   data: ^ppzval;
   cnt : integer;
+  {$IFDEF PHP5}
+  EG : pzend_executor_globals;
+  {$ENDIF}
 begin
   {$IFDEF PHP4}
    ht := GetSymbolsTable;
   {$ELSE}
-   ht := @GetExecutorGlobals.symbol_table;
+    begin
+     EG := GetExecutorGlobals;
+     if Assigned(EG) then
+     ht := @EG.symbol_table
+      else
+        ht := nil;
+    end;
   {$ENDIF}
+
   if Assigned(ht) then
    begin
      for cnt := 0 to FVariables.Count - 1  do
@@ -1574,7 +1610,7 @@ begin
 
 
       //Start PHP thread safe resource manager
-      tsrm_startup(1, 1, 0 , nil);
+      tsrm_startup(128, 1, 0 , nil);
 
       sapi_startup(@delphi_sapi_module);
 

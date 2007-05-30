@@ -3,7 +3,7 @@ unit php_thread;
 interface
 
 uses
-  Windows, Classes, PHPCommon, php4Delphi, PHPTypes, ZendTypes, ZENDAPI, PHPAPI,
+  Windows, Classes, Forms, PHPCommon, php4Delphi, PHPTypes, ZendTypes, ZENDAPI, PHPAPI,
   idThread, IdBaseComponent, IdThreadMgr,
   IdThreadMgrPool;
 
@@ -50,17 +50,19 @@ end;
 
 procedure TPHPThread.Report;
 begin
+  Application.ProcessMessages;
   frmMain.MemoOut.Lines.Add(S);
+  Application.ProcessMessages;
 end;
 
 procedure TPHPThread.Run;
 var
  cnt : integer;
 begin
-  for cnt := 1 to 1000 do
+  for cnt := 1 to 100 do
    begin
      S := PHP.RunCode(Code);
-    // Synchronize(Report);
+     Synchronize(Report);
    end;
   Stop;
   //We will not destroy thread resources of TSRM

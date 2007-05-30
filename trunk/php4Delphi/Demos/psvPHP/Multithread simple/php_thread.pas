@@ -3,7 +3,7 @@ unit php_thread;
 interface
 
 uses
-  Windows, Classes, PHPCommon, php4Delphi, PHPTypes, ZendTypes, ZENDAPI, PHPAPI;
+  Windows, Classes, Forms, PHPCommon, php4Delphi, PHPTypes, ZendTypes, ZENDAPI, PHPAPI;
 
 type
   TPHPThread = class(TThread)
@@ -12,6 +12,7 @@ type
     PHP : TpsvPHP;
   protected
     procedure Execute; override;
+    procedure ComeBack;
   end;
 
 implementation
@@ -19,12 +20,19 @@ implementation
 
 { TPHPThread }
 
+procedure TPHPThread.ComeBack;
+begin
+  Application.ProcessMessages;
+end;
+
 procedure TPHPThread.Execute;
 begin
   PHP := TpsvPHP.Create(nil);
   PHP.RunCode('echo "Threaded";');
   PHP.Free;
+  Synchronize(ComeBack);
   sleep(250); //for zend_timeout to kill timer
+  Synchronize(ComeBack);
   try
     //This will release thread allocated resources
     //The better way is to reuse existsing threads

@@ -1239,6 +1239,7 @@ type
   end;
 
   jump_buf = array[0..63] of byte;
+  p_jump_buf = ^jump_buf;
 
 {$IFDEF PHP5}
 type  _zend_objects_store = record
@@ -1292,7 +1293,11 @@ type
 
      included_files : THashTable;	// files already included */
 
+     {$IFDEF PHP4}
      bailout : jump_buf;
+     {$ELSE}
+     bailout : p_jump_buf;
+     {$ENDIF}
 
      error_reporting : integer;
      orig_error_reporting : integer;
@@ -1321,7 +1326,10 @@ type
      {$ENDIF}
      {$ENDIF}
 
+     {$IFDEF PHP4}
      bailout_set : zend_bool;
+     {$ENDIF}
+
      full_tables_cleanup : zend_bool;
      {$IFDEF PHP5}
      ze1_compatibility_mode : zend_bool;
